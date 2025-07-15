@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Form</title>
+</head>
+<body>
+    <div style="margin: 20px">
+        <div style="border:2px; background-origin: padding-box;">
+            <br>
+            <h2 style="justify-content: center;">Enter the Product Details</h2>
+            <form method="post" enctype="multipart/form-data" id="product-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <h3>Product Descriptions</h3>
+                <div id="descriptions-container">
+                    {{ formset.management_form }}
+                    {% for form in formset.forms %}
+                    <div class="description-form">
+                        {{ form.as_p }}
+                        {% if form.instance.pk %}
+                        <label>Delete: {{ form.DELETE }}</label>
+                        {% endif %}
+                        <button type="button" class="remove-description">Remove</button>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" id="add-description">Add Description</button>
+                <button type="submit">Save</button>
+            </form>
+
+        </div>
+    </div>
+<script>
+  const addButton = document.getElementById('add-description');
+  const container = document.getElementById('descriptions-container');
+
+  // Total forms count from management form
+  const totalForms = document.querySelector('#id_descriptions-TOTAL_FORMS');
+
+  addButton.addEventListener('click', () => {
+    let formIdx = parseInt(totalForms.value);
+    let emptyForm = container.querySelector('.description-form').cloneNode(true);
+
+    // Clear inputs in cloned form
+    emptyForm.querySelectorAll('input').forEach(input => {
+      if (input.type !== 'hidden') input.value = '';
+    });
+
+    // Update input names and ids with new index
+    emptyForm.querySelectorAll('input, select, textarea').forEach(el => {
+      if (el.name) el.name = el.name.replace(/-\d+-/, `-${formIdx}-`);
+      if (el.id) el.id = el.id.replace(/-\d+-/, `-${formIdx}-`);
+    });
+
+    // Append new form
+    container.appendChild(emptyForm);
+
+    // Increment total forms count
+    totalForms.value = formIdx + 1;
+
+    // Attach remove handler to new form button
+    attachRemoveHandler(emptyForm.querySelector('.remove-description'));
+  });
+
+  function attachRemoveHandler(button) {
+    button.addEventListener('click', () => {
+      button.parentElement.remove();
+
+      // Update total forms count after removal
+      let forms = container.querySelectorAll('.description-form');
+      totalForms.value = forms.length;
+
+      // Re-index all forms (important!)
+      forms.forEach((form, idx) => {
+        form.querySelectorAll('input, select, textarea').forEach(el => {
+          if (el.name) el.name = el.name.replace(/-\d+-/, `-${idx}-`);
+          if (el.id) el.id = el.id.replace(/-\d+-/, `-${idx}-`);
+        });
+      });
+    });
+  }
+
+  // Attach remove handlers for existing forms
+  document.querySelectorAll('.remove-description').forEach(button => {
+    attachRemoveHandler(button);
+  });
+</script>
+
+</body>
+</html>

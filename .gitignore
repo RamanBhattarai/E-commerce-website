@@ -1,0 +1,54 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django migrations (optional, keep if you want to version migrations)
+**/migrations/
+!*/migrations/__init__.py
+
+# SQLite database (ignore if using a local DB only)
+*.sqlite3
+
+# Virtual environment
+.env
+.venv/
+env/
+venv/
+
+# VSCode settings
+.vscode/
+
+# macOS files
+.DS_Store
+
+# Environment variables
+.env
+
+# Static and media files (optional, if using collectstatic in production)
+staticfiles/
+media/
+
+# Logs
+*.log
+
+# Coverage reports
+htmlcov/
+.coverage
+.tox/
+.nox/
+
+# pytest
+.pytest_cache/
+
+# MyPy and Pyre type checkers
+.mypy_cache/
+.pyre/
+
+# Build and distribution
+build/
+dist/
+*.egg-info/
+
+# Node modules (if using npm/yarn for frontend)
+node_modules/

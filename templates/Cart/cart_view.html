@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title_content %}
+Shopping Cart
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Your Shopping Cart</h1>
+    {% if cart_items %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>${{ item.product.price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.product.price|multiply:item.quantity }}</td>
+                        <td>
+                            <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger">Remove</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Total: ${{ total_price }}</h3>
+
+        <a href="{% url 'Order' %}" class="btn btn-success">Order Items</a>
+        <a href="{% url 'clear_cart' %}" class="btn btn-warning">Clear Cart</a>
+        
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <br>
+        <hr>
+        <br>
+        <a href="{% url 'homepage' %}" class="btn btn-secondary">Continue Shopping</a>
+        <br>
+
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}   
+<style>
+    .table {
+        width: 100%;
+        margin-top: 20px;
+    }
+    .table th, .table td {
+        text-align: center;
+    }
+    .btn {
+        margin: 5px;
+    }
+</style>
+{% endblock %}

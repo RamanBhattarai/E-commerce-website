@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title_content %}
+Product Details
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="product-details" style="display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
+        <h1>{{ product.name }}</h1>
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100%; height: auto; border-radius: 5px; margin-bottom: 20px;">
+        <p style="font-size: 18px;">Price: ${{ product.price }}</p>
+        <p style="font-size: 16px;">Brand: {{ product.brand }}</p>
+        <p style="font-size: 16px;">Status: {{ product.get_status_display }}</p>
+
+        <h3 style="margin-top: 20px;">Specifications</h3>
+        <table style="border-collapse: collapse; margin-top: 10px;">
+            {% for desc in descriptions %}
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">{{ desc.key }}</td>
+                <td style="padding: 8px;">: {{ desc.value }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">No specifications available.</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary" style="margin-top: 20px;">Add to Cart</a>
+        <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-secondary" style="margin-top: 10px;">Add to Wishlist</a>
+    </div>
+
+    <div class="related-products" style="margin-top: 40px;">
+        <h2>Related Products</h2>
+        <div class="product-list" style="display: flex; flex-wrap: wrap; gap: 20px;">
+            {% for related_product in related_products %}
+                <div class="product-item" style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; width: calc(33.333% - 20px); background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <a href="{% url 'product_detail' related_product.id %}" style="text-decoration: none; color: #000;">
+                        <img src="{{ related_product.image.url }}" alt="{{ related_product.name }}" style="max-width: 100%; height: auto; border-radius: 5px;">
+                        <h3 style="font-size: 18px;">{{ related_product.name }}</h3>
+                    </a>
+                    <p style="font-size: 16px;">Price: ${{ related_product.price }}</p>
+                </div>
+            {% empty %}
+                <p>No related products found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

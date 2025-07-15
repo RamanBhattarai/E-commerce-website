@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title_content %}
+Order History
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Your Order History</h1>
+    {% if order_history %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in order_history %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.date }}</td>
+                        <td>${{ order.total_amount }}</td>
+                        <td>{{ order.status }}</td>
+                        <td>
+                            <a href="{% url 'order_detail' order.id %}" class="btn btn-info">View Details</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+        <p>You have no orders in your history.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table {
+        width: 100%;
+        margin-top: 20px;
+    }
+    .table th, .table td {
+        text-align: center;
+    }
+    .btn {
+        margin: 5px;
+    }
+</style>
+{% endblock %}

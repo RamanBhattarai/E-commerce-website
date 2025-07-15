@@ -1,0 +1,139 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}Base Page{% endblock %}
+        {% if title %} - {{ title }}{% endif %}
+    </title>
+</head>
+<body>
+    <div>
+        <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: #24afff; border-bottom: 1px solid #ddd; border-radius: 5px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    
+            <!-- Left Icons -->
+            <ul style="list-style: none; display: flex; gap: 20px; align-items: center; margin: 0;">
+                <li><a href="{% url 'home' %}" title="Home" style="font-size: 24px; text-decoration: none;">🏠</a></li>
+                <li><a href="{% url 'cart' %}" title="Cart" style="font-size: 24px; text-decoration: none;">🛒</a></li>
+                <li><a href="{% url 'orders' %}" title="Orders" style="font-size: 24px; text-decoration: none;">🚚</a></li>
+            </ul>
+
+            <!-- Right Icons -->
+            <ul style="list-style: none; display: flex; gap: 20px; align-items: center; margin: 0;">
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'order_history' %}" title="Order History" style="font-size: 24px; text-decoration: none;">🎉</a></li>
+                    <li><a href="{% url 'wishlist' %}" title="Wishlist" style="font-size: 24px; text-decoration: none;">🎁</a></li>
+                    <li><a href="{% url 'profile' %}" title="Profile" style="font-size: 24px; text-decoration: none;">🙎‍♂️</a></li>
+                    <li><a href="{% url 'logout' %}" title="Logout" style="font-size: 24px; text-decoration: none;">🚀</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}" title="Login" style="font-size: 18px; text-decoration: none;">🔐</a></li>
+                    <li><a href="{% url 'register' %}" title="Register" style="font-size: 18px; text-decoration: none;">📝</a></li>
+                {% endif %}
+            </ul>
+
+        </nav>
+
+
+        <!-- Search Bar -->
+        <form method="get" action="{% url 'search' %}" style="max-width: 800px; margin: 0 auto; display: flex; justify-content: center;">
+            <div style="position: relative; width: 100%;">
+                <input 
+                    type="text" 
+                    name="q" 
+                    placeholder="Search blog posts..." 
+                    value="{{ request.GET.q }}" 
+                    style="
+                        width: 100%;
+                        padding: 12px 100px 12px 16px;  /* Leave space for button */
+                        border: 1px solid #ccc;
+                        border-radius: 25px;
+                        outline: none;
+                        font-size: 16px;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                    "
+                >
+                <button 
+                    type="submit" 
+                    style="
+                        position: absolute;
+                        top: 50%;
+                        right: 10px;
+                        transform: translateY(-50%);
+                        padding: 8px 20px;
+                        background-color: #007bff;
+                        color: white;
+                        border: none;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 14px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                    "
+                >Search</button>
+            </div>
+        </form>
+
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+
+        <div class="content" style="display: flex; flex-direction: row; justify-content: space-between; padding: 20px;">
+    
+            <!-- Left Sidebar (Categories + Ratings) -->
+            <div style="width: 20%; background-color: #f8f8f8; padding: 10px; border-radius: 5px; justify-content: space-between;">
+                <ul>
+                    {% for category in categories %}
+                        <li><a href="{% url 'category_products' category.id %}">{{ category.name }}</a></li>
+                    {% endfor %}
+                </ul>
+                <br>
+                <hr>
+                <br>
+                <ul>
+                    {% for rating in ratings %}
+                        <li><a href="{% url 'rating_products' rating.id %}">{{ rating.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Main Content Area -->
+            <div style="width: 70%; background-color: #f8f8f8; padding: 10px; border-radius: 5px; justify-content: space-between;">
+                {% block content %}
+                <!-- Page-specific content goes here -->
+                {% endblock %}
+            </div>
+
+            <!-- Right Sidebar (Optional/Empty) -->
+            <div style="width: 10%; background-color: #f8f8f8; padding: 10px; border-radius: 5px;">
+                {% block sidebar %}
+                <!-- Sidebar content can go here -->
+                {% endblock %}
+            </div>
+
+        </div>
+
+
+        <footer style="text-align: center; padding: 20px; background-color: #f1f1f1; margin-top: 20px;">
+            <p>&copy; 2024 E-Commerce App</p>
+        </footer>
+    </div>
+
+{% block extra_css %}
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+{% endblock %}
+
+</body>
+</html>

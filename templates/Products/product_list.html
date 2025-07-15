@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}
+Product List
+{% endblock %}
+
+{% block content %}
+<h1>
+  {% if selected_category %}
+    Products in "{{ selected_category.name }}"
+  {% else %}
+    All Products
+  {% endif %}
+</h1>
+{% endblock %}
