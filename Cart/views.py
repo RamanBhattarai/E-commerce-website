@@ -1,31 +1,54 @@
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import CartItem
-from .forms import CartItemForm
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import CartItem, Cart
+from Products.models import Product
 
 
-# Create your views here.
 @login_required(login_url='login')
 def cart_view(request):
-    cart_items = CartItem.objects.filter(user=request.user)
-    return render(request, 'cart_view.html', {'cart_items': cart_items})
+    cart = Cart.objects.filter(user=request.user).first()
+    
+    if cart:
+        cart_items = cart.items.all()
+        total_price = cart.total_price()
+    else:
+        cart_items = []
+        total_price = 0
+
+    return render(request, 'cart_view.html', {'cart_items': cart_items, 'total_price': total_price})
 
 
 @login_required(login_url='login')
-def add_to_cart(request):
-    if request.method == 'POST':
-        form = CartItemForm(request.POST)
-        if form.is_valid():
-            cart_item = form.save(commit=False)
-            cart_item.user = request.user
-            cart_item.save()
-            return render(request, 'cart_view.html', {'cart_items': [cart_item], 'total_price': cart_item.total_price})
-    else:
-        form = CartItemForm()
-    return render(request, 'add_to_cart.html', {'form': form})
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    
+    cart, created = Cart.objects.get_or_create(user=request.user)
+
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+    
+    if not created:
+        cart_item.quantity += 1  # already in cart, increment quantity
+    cart_item.save()
+
+    return redirect(request.META.get('HTTP_REFERER', 'homepage'))
+
+
+@login_required(login_url='login')
+def remove_from_cart(request, id):
+    cart = Cart.objects.filter(user=request.user).first()
+
+    if request.method == "POST" and cart:
+        cart_item = get_object_or_404(CartItem, cart=cart, id=id)
+        cart_item.delete()
+
+    return redirect('cart_view')
 
 
 @login_required(login_url='login')
 def clear_cart(request):
-    CartItem.objects.filter(user=request.user).delete()
-    return render(request, 'cart_view.html', {'cart_items': [], 'total_price': 0.00})
+    cart = Cart.objects.filter(user=request.user).first()
+    
+    if cart:
+        cart.items.all().delete()
+
+    return redirect('cart_view')

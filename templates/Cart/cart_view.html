@@ -24,9 +24,14 @@ Shopping Cart
                         <td>{{ item.product.name }}</td>
                         <td>${{ item.product.price }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>${{ item.product.price|multiply:item.quantity }}</td>
+                        <td>${{ item.total_price }}</td>
                         <td>
-                            <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger">Remove</a>
+                            <form method="post" action="{% url 'remove_from_cart' item.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger" style="padding:5px;">
+                                    Remove
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}
@@ -35,17 +40,10 @@ Shopping Cart
 
         <h3>Total: ${{ total_price }}</h3>
 
-        <a href="{% url 'Order' %}" class="btn btn-success">Order Items</a>
+        <a href="{% url 'Order' %}" class="btn btn-success" style="margin-right:10px;">Order Items</a>
         <a href="{% url 'clear_cart' %}" class="btn btn-warning">Clear Cart</a>
         
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li class="alert alert-{{ message.tags }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-        <br>
+        <br><br>
         <hr>
         <br>
         <a href="{% url 'homepage' %}" class="btn btn-secondary">Continue Shopping</a>
@@ -57,7 +55,7 @@ Shopping Cart
 </div>
 {% endblock %}
 
-{% block extra_css %}   
+{% block extra_css %}
 <style>
     .table {
         width: 100%;

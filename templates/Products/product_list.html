@@ -7,9 +7,22 @@ Product List
 {% block content %}
 <h1>
   {% if selected_category %}
-    Products in "{{ selected_category.name }}"
+    "{{ selected_category.name }}"
   {% else %}
     All Products
+    <form method="post" action="{% url 'add_to_cart' product.id %}" style="display:inline;">
+      {% csrf_token %}
+    <button type="submit" class="btn btn-outline-success btn-sm">
+      🛒 Add to Cart
+    </button>
+  </form>
+
+  <form method="post" action="{% url 'add_to_wishlist' product.id %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-success btn-sm">
+      🛒 Add to Wishlist
+    </button>
+  </form>
   {% endif %}
 </h1>
 {% endblock %}
