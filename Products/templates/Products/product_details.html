@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title_content %}
+Product Details
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="product-details" style="display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
+        <h1>{{ product.name }}</h1>
+        {% if product.avg_rating %}
+            <p>Average Rating: {{ product.avg_rating|floatformat:1 }}⭐ ({{ product.reviews.count }} reviews)</p>
+        {% else %}
+            <p>No ratings yet.</p>
+        {% endif %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100%; height: auto; border-radius: 5px; margin-bottom: 20px;">
+        <p style="font-size: 18px;">Price: ${{ product.price }}</p>
+        <p style="font-size: 16px;">Brand: {{ product.brand }}</p>
+        <p style="font-size: 16px;">Status: {{ product.get_status_display }}</p>
+
+        <h3 style="margin-top: 20px;">Specifications</h3>
+        <table style="border-collapse: collapse; margin-top: 10px;">
+            {% for desc in descriptions %}
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">{{ desc.key }}</td>
+                    <td style="padding: 8px;">: {{ desc.value }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">No specifications available.</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <br>
+        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary" style="margin-top: 20px;">🛒 Add to Cart</a>
+        <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-secondary" style="margin-top: 10px;">💖 Add to Wishlist</a>
+        
+        <hr>
+        <hr>
+        <h3>Leave a Review</h3>
+        <form id="reviewForm" method="post" action="{% url 'submit_review' product.id %}">
+            {% csrf_token %}
+            <textarea name="review" id="review" rows="3" placeholder="Write your review..." required style="width: 100%; margin-bottom: 10px;"></textarea><br>
+            <label for="rating">Rating:</label>
+            <select name="rating" id="rating" required>
+                <option value="">-- Select --</option>
+                {% for i in "12345" %}
+                <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select><br><br>
+            <button type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
+
+        <div id="review-message" style="margin-top: 10px;"></div>
+
+        <h3 style="padding:10px;">Reviews</h3>
+        {% if product_reviews %}
+            <table style="border-collapse: collapse; margin-top: 10px; width: 100%;">
+                {% for review_data in product_reviews %}
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">{{ review_data.user.username }}</td>
+                    <td style="padding: 8px;">{{ review_data.review }}</td>
+                    <td style="padding: 8px;">Rating: {{ review_data.rating }}⭐</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <h4 style="padding: 20px;"><i>No reviews.</i></h4>
+        {% endif %}
+
+        
+    </div>
+</div>
+    
+{% endblock %}
+
+{% block sidebar %}
+<div class="related-products" style="margin-top: 40px;">
+<h2>Related Products</h2>
+    <div class="product-list">
+    {% for related_product in related_products %}
+        <div class="product-item" style="margin-bottom: 20px;">
+        <a href="{% url 'product_detail' related_product.id %}">
+            <img src="{{ related_product.image.url }}" alt="{{ related_product.name }}" style="width: 100%; height: auto; border-radius: 5px;">
+            <h3 style="font-size: 16px;">{{ related_product.name }}</h3>
+        </a>
+        <p>Price: ${{ related_product.price }}</p>
+
+        <form method="post" action="{% url 'add_to_cart' related_product.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-success btn-sm" style="width: 100%;">🛒</button>
+        </form>
+        <form method="post" action="{% url 'add_to_wishlist' related_product.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-secondary btn-sm" style="width: 100%;">💖</button>
+        </form>
+        </div>
+    {% endfor %}
+</div>
+
+</div>
+
+{% endblock %}

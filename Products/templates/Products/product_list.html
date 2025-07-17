@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}
+Product List
+{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+  {% if selected_category %}
+    <h2>Category: "{{ selected_category.name }}"</h2>
+  {% endif %}
+
+  {% if min_rating and max_rating %}
+    <h3>Products with rating from {{ min_rating }} to {{ max_rating }}</h3>
+  {% else %}
+    <h3>Available Products</h3>
+  {% endif %}
+
+  {% if products %}
+    <div style="display: flex; flex-wrap: wrap; gap: 30px; margin-top: 20px;">
+      {% for product in products %}
+        <div style="width: 220px; border: 1px solid #ddd; border-radius: 10px; padding: 10px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 100%; height: auto; border-radius: 5px;">
+          <h4 style="margin: 10px 0 5px 0;">{{ product.name }}</h4>
+          <p style="font-size: 16px; margin-bottom: 10px;">Price: ${{ product.price }}</p>
+
+          <form method="post" action="{% url 'add_to_cart' product.id %}" style="margin-bottom: 5px;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-success btn-sm" style="width: 100%;">🛒 Add to Cart</button>
+          </form>
+
+          <form method="post" action="{% url 'add_to_wishlist' product.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-primary btn-sm" style="width: 100%;">🎁 Add to Wishlist</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No products found in this selection.</p>
+  {% endif %}
+</div>
+{% endblock %}

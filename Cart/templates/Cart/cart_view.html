@@ -32,6 +32,19 @@ Shopping Cart
                                     Remove
                                 </button>
                             </form>
+                            <br>
+                            <form method="post" action="{% url 'add_quantity' item.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="padding: 3px;" title="Increase Quantity">
+                                    ➕
+                                </button>
+                            </form>
+                            <form method="post" action="{% url 'subtract_quantity' item.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="padding: 3px;" title="Decrease Quantity">
+                                    ➖
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}
@@ -40,7 +53,7 @@ Shopping Cart
 
         <h3>Total: ${{ total_price }}</h3>
 
-        <a href="{% url 'Order' %}" class="btn btn-success" style="margin-right:10px;">Order Items</a>
+        <a href="{% url 'delivery' %}" class="btn btn-success" style="margin-right:10px;">Place Order</a>
         <a href="{% url 'clear_cart' %}" class="btn btn-warning">Clear Cart</a>
         
         <br><br>

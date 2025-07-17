@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title_content %}
+Delivery Method
+{% endblock %}
+
+{% block content %}
+<div style="border: 2px solid #0ac; background-color: #0ac; color:#2ef; margin: 20px; padding:20px">
+    <form method="post" action="{% url 'delivery' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">✔ Confirm Delivery</button>
+    </form>
+    <a href="{% url 'cart_view' %}" style="display:inline-block; border:1px solid #0a0; padding: 10px; margin:20px; background-color: #0a0; color: #101; text-decoration:none;">⬅ Back</a>
+</div>
+{% endblock %}

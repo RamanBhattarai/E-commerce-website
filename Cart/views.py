@@ -52,3 +52,24 @@ def clear_cart(request):
         cart.items.all().delete()
 
     return redirect('cart_view')
+
+
+@login_required(login_url='login')
+def add_quantity(request, id):
+    cart = Cart.objects.filter(user=request.user).first()
+
+    if request.method == "POST" and cart:
+        cart_item = get_object_or_404(CartItem, cart=cart, id=id)
+        cart_item.quantity += 1
+
+    return redirect('cart_view')
+
+@login_required(login_url='login')
+def subtract_quantity(request, id):
+    cart = Cart.objects.filter(user=request.user).first()
+
+    if request.method == "POST" and cart:
+        cart_item = get_object_or_404(CartItem, cart=cart, id=id)
+        cart_item.quantity -= 1
+
+    return redirect('cart_view')

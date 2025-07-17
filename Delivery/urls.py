@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import delivery
 
-urls = [
+urlpatterns = [
     path('delivery/', delivery, name='delivery'),
 ]

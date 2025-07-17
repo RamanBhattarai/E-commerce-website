@@ -14,6 +14,7 @@ Order History
                     <th>Order ID</th>
                     <th>Date</th>
                     <th>Total Amount</th>
+                    <th>Delivery Method</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -21,12 +22,15 @@ Order History
             <tbody>
                 {% for order in order_history %}
                     <tr>
-                        <td>{{ order.id }}</td>
-                        <td>{{ order.date }}</td>
-                        <td>${{ order.total_amount }}</td>
+                        <td>{{ order.order_number }}</td>
+                        <td>{{ order.created_at }}</td>
+                        <td>{{ order.total_price }}</td>
+                        <td>{{ order.delivery_method }}</td>
                         <td>{{ order.status }}</td>
                         <td>
-                            <a href="{% url 'order_detail' order.id %}" class="btn btn-info">View Details</a>
+                            <a href="{% url 'order_details_view' order.order_number %}" class="btn btn-info">
+                                View Details
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
