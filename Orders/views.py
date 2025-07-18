@@ -22,7 +22,7 @@ def order_view(request):
             'total_price': order.total_price(),
         })
 
-    return render(request, 'order_view.html', {'orders': order_list})
+    return render(request, 'Orders/order_view.html', {'orders': order_list})
 
 
 @login_required(login_url='login')
@@ -32,7 +32,7 @@ def order_details_view(request, order_number):
     order_items = order.items.all()
     total_price = order.total_price()
 
-    return render(request, 'order_details_view.html', {
+    return render(request, 'Orders/order_details_view.html', {
         'order': order,
         'order_items': order_items,
         'total_price': total_price
@@ -79,7 +79,7 @@ def order_history(request):
             'total_price': order.total_price(),
         })
 
-    return render(request, 'order_history.html', {'orders': order_list})
+    return render(request, 'Orders/order_history.html', {'orders': order_list})
 
 
 @login_required(login_url='login')

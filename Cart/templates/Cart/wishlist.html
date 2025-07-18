@@ -13,6 +13,8 @@ Your Wishlist
                 <tr>
                     <th>Product</th>
                     <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -21,6 +23,8 @@ Your Wishlist
                     <tr>
                         <td>{{ item.product.name }}</td>
                         <td>${{ item.product.price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.total_price }}</td>
                         <td>
                             <a href="{% url 'remove_from_wishlist' item.id %}" class="btn btn-danger">Remove</a>
                             <a href="{% url 'add_to_cart' item.product.id %}" class="btn btn-primary">Add to Cart</a>

@@ -3,11 +3,6 @@ from .models import DeliveryList
 from .forms import DeliveryListForm
 from django.contrib.auth.decorators import login_required
 
-# Create your views here.
-@login_required(login_url='login')
-def delivery(request):
-    delivery_object = DeliveryList.objects.filter(user=request.user)
-    return render(request, 'delivery_method.html', {'delivery_object':delivery_object})
 
 @login_required(login_url='login')
 def delivery(request):
@@ -21,7 +16,7 @@ def delivery(request):
     else:
         form = DeliveryListForm()
     delivery_object = DeliveryList.objects.filter(user=request.user)
-    return render(request, 'delivery_method.html', {
+    return render(request, 'Delivery/delivery_method.html', {
         'form': form,
         'delivery_object': delivery_object
     })

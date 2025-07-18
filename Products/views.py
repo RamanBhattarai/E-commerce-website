@@ -21,7 +21,7 @@ def product_create(request):
         form = ProductForm()
         formset = ProductDescriptionFormSet()
 
-    return render(request, 'product_form.html', {'form': form, 'formset': formset})
+    return render(request, 'Products/product_form.html', {'form': form, 'formset': formset})
 
 
 def product_update(request, pk):
@@ -36,7 +36,7 @@ def product_update(request, pk):
     else:
         form = ProductForm(instance=product)
         formset = ProductDescriptionFormSet(instance=product)
-    return render(request, 'product_form.html', {'form': form, 'formset': formset})
+    return render(request, 'Products/product_form.html', {'form': form, 'formset': formset})
 
 
 def product_list(request, pk=None):
@@ -51,7 +51,7 @@ def product_list(request, pk=None):
         'products': products,
         'selected_category': selected_category,
     }
-    return render(request, 'product_list.html', context)
+    return render(request, 'Products/product_list.html', context)
 
 
 def product_detail(request, pk):
@@ -66,7 +66,7 @@ def product_detail(request, pk):
         'descriptions': product.descriptions.all(),  # get all key-value description entries
         'product_reviews': product.reviews.all()
     }
-    return render(request, 'product_detail.html', context)
+    return render(request, 'Products/product_detail.html', context)
 
 
 def rated_products_by_range(request):
@@ -86,7 +86,7 @@ def rated_products_by_range(request):
 
     products = products.order_by('-avg_rating')
 
-    return render(request, 'product_list.html', {
+    return render(request, 'Products/product_list.html', {
         'products': products,
         'min_rating': min_rating,
         'max_rating': max_rating,

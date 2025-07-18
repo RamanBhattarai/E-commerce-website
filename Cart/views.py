@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import CartItem, Cart
+from .models import CartItem, Cart, Wishlist
 from Products.models import Product
 
 
@@ -15,7 +15,7 @@ def cart_view(request):
         cart_items = []
         total_price = 0
 
-    return render(request, 'cart_view.html', {'cart_items': cart_items, 'total_price': total_price})
+    return render(request, 'Cart/cart_view.html', {'cart_items': cart_items, 'total_price': total_price})
 
 
 @login_required(login_url='login')
@@ -73,3 +73,18 @@ def subtract_quantity(request, id):
         cart_item.quantity -= 1
 
     return redirect('cart_view')
+
+
+@login_required(login_url='login')
+def wishlist(request):
+    lists = Wishlist.object.filter(user=request.user).first()
+    
+    if lists:
+        wishlist_items = lists.items.all()
+        total_price = lists.total_price()
+    else:
+        wishlist_items = []
+        total_price = 0
+
+    return render(request, 'lists/lists_view.html', {'wishlist_items': wishlist_items, 'total_price': total_price})
+    

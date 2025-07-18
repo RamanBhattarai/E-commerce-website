@@ -5,7 +5,7 @@ from .models import UserProfile
 from .edit_form import UserProfileEditForm
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash, logout
-from Orders.models import OrderList
+from Orders.models import Order
 from django.contrib import messages
 
 
@@ -13,8 +13,8 @@ from django.contrib import messages
 @login_required(login_url='login')
 def profile_view(request):
     user_profile = get_object_or_404(UserProfile, username=request.user.username)
-    user_orders = OrderList.objects.filter(user=request.user, status='pending')
-    return render(request, 'profile_view.html', {
+    user_orders = Order.objects.filter(user=request.user, status='pending')
+    return render(request, 'Users/profile_view.html', {
         'profile': user_profile,
         'order': user_orders
     })
@@ -32,7 +32,7 @@ def edit_profile_view(request):
     else:
         form = UserProfileEditForm(instance=user_profile)
     
-    return render(request, 'edit_profile_view.html', {'form': form})
+    return render(request, 'Users/edit_profile_view.html', {'form': form})
 
 
 @login_required(login_url='login')
@@ -46,7 +46,7 @@ def change_password_view(request):
     else:
         form = PasswordChangeForm(user=request.user)
     
-    return render(request, 'change_password.html', {'form': form})
+    return render(request, 'Users/change_password.html', {'form': form})
 
 
 @login_required(login_url='login')

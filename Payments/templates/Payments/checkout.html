@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Khalti Checkout</title>
+    <script src="https://khalti.com/static/khalti-checkout.js"></script>
+</head>
+<body>
+    <h2>Pay with Khalti</h2>
+    <button id="khalti-button">Pay Rs. {{ order.total_price }}</button>
+
+    <script>
+        var config = {
+            publicKey: "{{ khalti_public_key }}",
+            productIdentity: "{{ order.order_number }}",
+            productName: "Order #{{ order.order_number }}",
+            productUrl: window.location.href,
+            paymentPreference: ["KHALTI"],
+
+            eventHandler: {
+                onSuccess(payload) {
+                    console.log(payload);
+                    fetch("/payment/khalti-verify/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: `token=${payload.token}&amount={{ amount_paisa }}&order_number={{ order.order_number }}`
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Payment Successful!");
+                            window.location.href = "/Payments/success/";
+                        } else {
+                            alert("Payment verification failed: " + data.error);
+                        }
+                    });
+                },
+                onError(error) {
+                    console.log(error);
+                    alert("Payment error occurred.");
+                },
+                onClose() {
+                    console.log('Payment widget closed');
+                }
+            }
+        };
+
+        var checkout = new KhaltiCheckout(config);
+        var btn = document.getElementById("khalti-button");
+        btn.onclick = function () {
+            checkout.show({ amount: {{ amount_paisa }} });
+        }
+    </script>
+</body>
+</html>

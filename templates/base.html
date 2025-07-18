@@ -17,8 +17,8 @@
             <!-- Left Icons -->
             <ul style="list-style: none; display: flex; gap: 20px; align-items: center; margin: 0;">
                 <li><a href="{% url 'home' %}" title="Home" style="font-size: 24px; text-decoration: none;">🏠</a></li>
-                <li><a href="{% url 'cart' %}" title="Cart" style="font-size: 24px; text-decoration: none;">🛒</a></li>
-                <li><a href="{% url 'orders' %}" title="Orders" style="font-size: 24px; text-decoration: none;">🚚</a></li>
+                <li><a href="{% url 'cart_view' %}" title="Cart" style="font-size: 24px; text-decoration: none;">🛒</a></li>
+                <li><a href="{% url 'order_view' %}" title="Orders" style="font-size: 24px; text-decoration: none;">🚚</a></li>
             </ul>
 
             <!-- Right Icons -->
@@ -38,7 +38,10 @@
 
 
         <!-- Search Bar -->
+        {% comment "" %}
         <form method="get" action="{% url 'search' %}" style="max-width: 800px; margin: 0 auto; display: flex; justify-content: center;">
+        {% endcomment %}
+        <form method="get" style="max-width: 800px; margin: 0 auto; display: flex; justify-content: center;">
             <div style="position: relative; width: 100%;">
                 <input 
                     type="text" 
@@ -98,11 +101,13 @@
                 <hr>
                 <h3>Browse by Rating Range</h3>
                 <ul>
+                    {% comment "" %}
                     <li><a href="{% url 'rated_products' %}?min=0&max=1">0 - 1 Stars</a></li>
                     <li><a href="{% url 'rated_products' %}?min=1&max=2">1 - 2 Stars</a></li>
                     <li><a href="{% url 'rated_products' %}?min=2&max=3">2 - 3 Stars</a></li>
                     <li><a href="{% url 'rated_products' %}?min=3&max=4">3 - 4 Stars</a></li>
-                    <li><a href="{% url 'rated_products' %}?min=4&max=5">4 - 5 Stars</a></li>           
+                    <li><a href="{% url 'rated_products' %}?min=4&max=5">4 - 5 Stars</a></li> 
+                    {% endcomment %}          
                 </ul>
             </div>
 

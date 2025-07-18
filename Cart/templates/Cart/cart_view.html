@@ -56,15 +56,15 @@ Shopping Cart
         <a href="{% url 'delivery' %}" class="btn btn-success" style="margin-right:10px;">Place Order</a>
         <a href="{% url 'clear_cart' %}" class="btn btn-warning">Clear Cart</a>
         
-        <br><br>
-        <hr>
-        <br>
-        <a href="{% url 'homepage' %}" class="btn btn-secondary">Continue Shopping</a>
         <br>
 
     {% else %}
         <p>Your cart is empty.</p>
     {% endif %}
+    <hr>
+    <br>
+    <a href="{% url 'homepage' %}" class="btn btn-secondary">Continue Shopping</a>
+    <br>
 </div>
 {% endblock %}
 

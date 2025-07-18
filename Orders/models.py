@@ -2,6 +2,7 @@ from django.db import models
 from Products.models import Product
 from Delivery.models import DeliveryList
 import uuid
+from django.conf import settings
 
 # Create your models here.  
 class Order(models.Model):
@@ -10,7 +11,7 @@ class Order(models.Model):
         PENDING = "pending", "Pending"
         ON_THE_WAY = "on_the_way", "On The Way"
         CANCELLED = "cancelled", "Cancelled"
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     order_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
