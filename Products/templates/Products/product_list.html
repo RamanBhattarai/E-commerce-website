@@ -11,10 +11,15 @@ Product List
   {% endif %}
 
   {% if min_rating and max_rating %}
-    <h3>Products with rating from {{ min_rating }} to {{ max_rating }}</h3>
+    <h2>Products Rated Between {{ min_rating }} and {{ max_rating }} Stars</h2>
   {% else %}
     <h3>Available Products</h3>
   {% endif %}
+
+  {% if query %}
+    <h2>Search Results for "{{ query }}"</h2>
+  {% endif %}
+
 
   {% if products %}
     <div style="display: flex; flex-wrap: wrap; gap: 30px; margin-top: 20px;">

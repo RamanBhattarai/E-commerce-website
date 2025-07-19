@@ -1,7 +1,7 @@
 from .models import Category, Product
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ProductForm, ProductDescriptionFormSet
-from django.db.models import Avg
+from django.db.models import Avg, Q
 from django.shortcuts import render
 
 
@@ -91,3 +91,17 @@ def rated_products_by_range(request):
         'min_rating': min_rating,
         'max_rating': max_rating,
     })
+
+
+def product_search(request):
+    
+    query = request.GET.get('q')
+    products = Product.objects.none()
+
+    if query:
+        products = Product.objects.filter(
+            Q(name__icontains=query) |
+            Q(descriptions__value__icontains=query)
+        ).distinct().order_by('-created_at')
+
+    return render(request, 'Products/product_list.html', {'products': products, 'query': query})
