@@ -5,46 +5,63 @@ Your Orders
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <a href="{% url 'order_history' %}" style="float: right; margin:20px; border:1px; color: #000;">Order History</a>
+<div class="container" style="padding: 20px;">
     <h1>Your Orders</h1>
-    {% if orders %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Date</th>
-                    <th>Total Amount</th>
-                    <th>Delivery Method</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in orders %}
-                    <tr>
-                        <td>{{ order.order_number }}</td>
-                        <td>{{ order.created_at }}</td>
-                        <td>{{ order.total_price }}</td>
-                        <td>{{ order.delivery_method }}</td>
-                        <td>{{ order.status }}</td>
-                        <td>
-                            <a href="{% url 'order_details_view' order.order_number %}" class="btn btn-info">View Details</a>
-                            {% if order.status == 'pending' %}
-                                <a href="{% url 'cancel_order' order.order_number %}" class="btn btn-danger">
-                                    Cancel Order
-                                </a>
-                                <a href="{% url 'invoice_generation' order.order_number %}" style="padding: 10px;">
-                                    Download Invoice (PDF)
-                                </a>
-                            {% endif %}
-                            <br>            
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
 
+    {% if orders %}
+        <div style="overflow-x: auto;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Total Amount</th>
+                        <th>Delivery Method</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.order_number }}</td>
+                            <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>${{ order.total_price }}</td>
+                            <td>{{ order.delivery_method }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if order.status == 'pending' %}bg-warning
+                                    {% elif order.status == 'completed' %}bg-success
+                                    {% elif order.status == 'cancelled' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ order.status|capfirst }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                    <a href="{% url 'order_details_view' order.order_number %}" class="btn btn-sm btn-info">
+                                        View Details
+                                    </a>
+
+                                    {% if order.status == 'pending' %}
+                                        <form method="post" action="{% url 'cancel_order' order.order_number %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                Cancel Order
+                                            </button>
+                                        </form>
+
+                                        <a href="{% url 'invoice_generation' order.order_number %}" class="btn btn-sm btn-secondary">
+                                            Invoice (PDF)
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
         <p>You have no orders yet.</p>
     {% endif %}
@@ -53,15 +70,29 @@ Your Orders
 
 {% block extra_css %}
 <style>
-    .table {
-        width: 100%;
-        margin-top: 20px;
-    }
     .table th, .table td {
         text-align: center;
+        vertical-align: middle;
     }
+
     .btn {
-        margin: 5px;
+        margin: 3px;
     }
+
+    @media (max-width: 768px) {
+        .btn {
+            width: 100%;
+        }
+    }
+
+    .badge {
+        padding: 5px 10px;
+        font-size: 0.9em;
+    }
+
+    .bg-warning { background-color: #ffc107; color: #000; }
+    .bg-success { background-color: #28a745; color: #fff; }
+    .bg-danger  { background-color: #dc3545; color: #fff; }
+    .bg-secondary { background-color: #6c757d; color: #fff; }
 </style>
 {% endblock %}

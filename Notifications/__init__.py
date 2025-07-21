@@ -1,1 +1,2 @@
-default_app_config = 'Notifications.apps.NotificationsConfig'
+#Comment for now
+#default_app_config = 'Notifications.apps.NotificationsConfig'

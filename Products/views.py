@@ -1,7 +1,7 @@
 from .models import Category, Product
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ProductForm, ProductDescriptionFormSet
-from django.db.models import Avg, Q
+from django.db.models import Avg, Q, Count
 from django.shortcuts import render
 
 
@@ -39,17 +39,20 @@ def product_update(request, pk):
     return render(request, 'Products/product_form.html', {'form': form, 'formset': formset})
 
 
-def product_list(request, pk=None):
+def product_list(request, pk=None, category_id=None):
+    if category_id:
+        category = get_object_or_404(Category, id=category_id)
+        products = Product.objects.filter(category=category).order_by('-created_at')
     if pk:
         products = Product.objects.filter(category_id=pk).order_by('-created_at')
-        selected_category = Category.objects.get(pk=pk)
+        category = Category.objects.get(pk=pk)
     else:
         products = Product.objects.all().order_by('-created_at')
-        selected_category = None
+        category = None
 
     context = {
         'products': products,
-        'selected_category': selected_category,
+        'selected_category': category,
     }
     return render(request, 'Products/product_list.html', context)
 
@@ -105,3 +108,11 @@ def product_search(request):
         ).distinct().order_by('-created_at')
 
     return render(request, 'Products/product_list.html', {'products': products, 'query': query})
+
+
+def get_top_sellers(limit=5):
+    top_products = Product.objects.annotate(
+        avg_rating=Avg('reviews__rating'),
+        num_reviews=Count('reviews')
+    ).filter(avg_rating__isnull=False).order_by('-avg_rating', '-num_reviews')[:limit]
+    return top_products

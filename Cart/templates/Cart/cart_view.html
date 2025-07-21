@@ -1,84 +1,277 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shopping Cart</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
 
-{% block title_content %}
-Shopping Cart
-{% endblock %}
+        /* Navbar Styles */
+        .navbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #24afff;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 0 0 5px 5px;
+        }
 
-{% block content %}
-<div class="container">
-    <h1>Your Shopping Cart</h1>
-    {% if cart_items %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in cart_items %}
-                    <tr>
-                        <td>{{ item.product.name }}</td>
-                        <td>${{ item.product.price }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>${{ item.total_price }}</td>
-                        <td>
-                            <form method="post" action="{% url 'remove_from_cart' item.id %}" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger" style="padding:5px;">
-                                    Remove
-                                </button>
-                            </form>
-                            <br>
-                            <form method="post" action="{% url 'add_quantity' item.id %}" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" style="padding: 3px;" title="Increase Quantity">
-                                    ➕
-                                </button>
-                            </form>
-                            <form method="post" action="{% url 'subtract_quantity' item.id %}" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" style="padding: 3px;" title="Decrease Quantity">
-                                    ➖
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
 
-        <h3>Total: ${{ total_price }}</h3>
+        .navbar li {
+            text-align: center;
+        }
 
-        <a href="{% url 'delivery' %}" class="btn btn-success" style="margin-right:10px;">Place Order</a>
-        <a href="{% url 'clear_cart' %}" class="btn btn-warning">Clear Cart</a>
-        
-        <br>
+        .navbar a {
+            text-decoration: none;
+            font-size: 22px;
+            display: block;
+            color: #000;
+        }
 
-    {% else %}
-        <p>Your cart is empty.</p>
+        .navbar span {
+            font-size: 14px;
+        }
+
+        /* Search Bar */
+        .search-form {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 10px;
+        }
+
+        .search-bar {
+            display: flex;
+            border-radius: 40px;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            outline: none;
+            border-radius: 40px 0 0 40px;
+        }
+
+        .search-bar button {
+            background-color: #635dc7ff;
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 0 40px 40px 0;
+            cursor: pointer;
+        }
+
+        /* Cart Table */
+        .container {
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart-image {
+            max-width: 50px;
+            border-radius: 5px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 2px;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            display: inline-block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar ul {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .navbar .search-form {
+                width: 100%;
+                margin: 10px 0;
+            }
+
+            .content {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            table th, table td {
+                font-size: 14px;
+            }
+        }
+
+        .messages {
+            list-style: none;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .alert {
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+
+        .alert-success { background-color: #d4edda; color: #155724; }
+        .alert-error { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <!-- Left Icons -->
+        <ul>
+            <li><a href="{% url 'home' %}">🏠</a><span>Home</span></li>
+            <li><a href="{% url 'cart_view' %}">🛒</a><span>Cart</span></li>
+            <li><a href="{% url 'order_view' %}">🚚</a><span>Orders</span></li>
+        </ul>
+
+        <!-- Search -->
+        <form method="get" action="{% url 'search' %}" class="search-form">
+            <div class="search-bar">
+                <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
+                <button type="submit">Search</button>
+            </div>
+        </form>
+
+        <!-- Right Icons -->
+        <ul>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'order_history' %}">🎉</a><span>History</span></li>
+                <li><a href="{% url 'wishlist' %}">🎁</a></li>
+                <li><a href="{% url 'profile' %}">🙎‍♂️</a><span>Profile</span></li>
+                <li><a href="{% url 'logout' %}">🚪</a><span>Logout</span></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">🔐</a><span>Login</span></li>
+                <li><a href="{% url 'register' %}">📝</a><span>Register</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Flash messages -->
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
-    <hr>
-    <br>
-    <a href="{% url 'homepage' %}" class="btn btn-secondary">Continue Shopping</a>
-    <br>
-</div>
-{% endblock %}
 
-{% block extra_css %}
-<style>
-    .table {
-        width: 100%;
-        margin-top: 20px;
-    }
-    .table th, .table td {
-        text-align: center;
-    }
-    .btn {
-        margin: 5px;
-    }
-</style>
-{% endblock %}
+    <!-- Cart Section -->
+    <div class="container">
+        <h1>Your Shopping Cart</h1>
+
+        {% if cart_items %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Image</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td><img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-image"/></td>
+                            <td>${{ item.product.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.total_price }}</td>
+                            <td>
+                                <form method="post" action="{% url 'remove_from_cart' item.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Remove</button>
+                                </form>
+                                <form method="post" action="{% url 'add_quantity' item.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn">➕</button>
+                                </form>
+                                <form method="post" action="{% url 'subtract_quantity' item.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn">➖</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3>Total: ${{ total_price }}</h3>
+
+            <form method="post" action="{% url 'place_order' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Place Order</button>
+            </form>
+
+            <form method="post" action="{% url 'clear_cart' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning">Clear Cart</button>
+            </form>
+        {% else %}
+            <p>Your cart is empty.</p>
+        {% endif %}
+
+        <hr />
+        <a href="{% url 'home' %}" class="btn btn-secondary">Continue Shopping</a>
+    </div>
+</body>
+</html>

@@ -1,47 +1,139 @@
 {% extends "base.html" %}
 
-{% block title_content %}
+{% block title %}
 E-Home
 {% endblock %}
 
-{% block content %} 
-<div class="container">
+{% block content %}
+<div class="container" style="margin-left: 20px;">
 
-    <div class="product-list" style="display: flex; flex-wrap: wrap; gap: 20px;">
-        {% for group in category_data %}
-            <h2>{{ group.category.name }}</h2>
-            <div class="product-list" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 40px;">
-                {% for product in group.products %}
-                    <div class="product-item" style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; width: calc(33.333% - 20px); background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                        <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: #000;">
-                            <h3 style="font-size: 18px;">
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100%; height: auto; border-radius: 5px;"><br>
-                                {{ product.name }}
-                            </h3>
-                        </a>
-                        <p style="font-size: 16px;">Price: ${{ product.price }}</p>
-                    </div>
+    {% for group in category_data %}
+        <h2>{{ group.category.name }}</h2>
+        <div class="product-list" style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+        ">
+            {% for product in group.products %}
+                <div class="product-item" style="
+                    flex: 1 1 220px;
+                    max-width: 23%;
+                    background-color: #fff;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                    padding: 15px;
+                    text-align: center;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    transition: box-shadow 0.3s ease;
+                "
+                onmouseover="this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)'"
+                onmouseout="this.style.boxShadow='0 2px 5px rgba(0,0,0,0.1)'"
+                >
+                    <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: #000; width: 100%;">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="
+                            max-width: 100%;
+                            height: auto;
+                            border-radius: 5px;
+                            margin-bottom: 10px;
+                            object-fit: contain;
+                        ">
+                        <h3 style="font-size: 18px; margin: 0 0 10px 0;">{{ product.name }}</h3>
+                    </a>
+                    <p style="font-size: 16px; margin: 0 0 15px 0;">Price: {{ product.price }}</p>
 
-                    <form method="post" action="{% url 'add_to_cart' product.id %}" style="display:inline;">
+                    <form method="post" action="{% url 'add_to_cart' product.id %}" class="add-to-cart-form" style="width: 100%; margin-bottom: 8px;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-success btn-sm">
+                        <button type="submit" style="
+                            width: 100%;
+                            background-color: #28a745;
+                            color: white;
+                            border: none;
+                            padding: 8px 0;
+                            border-radius: 5px;
+                            font-size: 14px;
+                            cursor: pointer;
+                            transition: background-color 0.3s ease;
+                        "
+                        onmouseover="this.style.backgroundColor='#218838'"
+                        onmouseout="this.style.backgroundColor='#28a745'"
+                        >
                             🛒 Add to Cart
                         </button>
                     </form>
 
-                    <form method="post" action="{% url 'add_to_wishlist' product.id %}" style="display:inline;">
+                    <form method="post" action="{% url 'add_to_wishlist' product.id %}" class="add-to-wishlist-form" style="width: 100%;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-success btn-sm">
-                            🛒 Add to Wishlist
+                        <button type="submit" style="
+                            width: 100%;
+                            background-color: #6c757d;
+                            color: white;
+                            border: none;
+                            padding: 8px 0;
+                            border-radius: 5px;
+                            font-size: 14px;
+                            cursor: pointer;
+                            transition: background-color 0.3s ease;
+                        "
+                        onmouseover="this.style.backgroundColor='#5a6268'"
+                        onmouseout="this.style.backgroundColor='#6c757d'"
+                        >
+                            💖 Add to Wishlist
                         </button>
                     </form>
-
-                {% endfor %}
-            </div>
-        {% endfor %}
-
-
-    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
 </div>
+
+<style>
+    @media (max-width: 1024px) {
+        .product-item {
+            max-width: 48% !important;
+            flex-basis: 48% !important;
+        }
+    }
+    @media (max-width: 600px) {
+        .product-item {
+            max-width: 100% !important;
+            flex-basis: 100% !important;
+        }
+    }
+</style>
 {% endblock %}
 
+
+{% block sidebar %}
+<h3 style="margin-bottom: 15px; font-weight: 600; color: #333;">Top Sellers</h3>
+<ul style="list-style: none; padding: 0; margin: 0 0 25px 0;">
+    {% for product in top_sellers %}
+    <li style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
+        <a href="{% url 'product_detail' product.id %}" style="flex-shrink: 0;">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+        </a>
+        <div>
+            <a href="{% url 'product_detail' product.id %}" style="color: #007bff; font-weight: 500; text-decoration: none;">{{ product.name|truncatechars:25 }}</a>
+            <p style="margin: 5px 0 0 0; font-size: 14px; color: #555;">${{ product.price }}</p>
+        </div>
+    </li>
+    {% empty %}
+    <li>No top sellers found.</li>
+    {% endfor %}
+</ul>
+
+<hr style="border-color: #ddd; margin-bottom: 25px;">
+
+
+<hr style="border-color: #ddd; margin: 25px 0;">
+
+<div style="text-align: center; font-size: 14px; color: #666;">
+    <p><strong>Customer Support</strong></p>
+    <p>Email: <a href="mailto:support@example.com" style="color: #007bff; text-decoration: none;">support@example.com</a></p>
+    <p>Phone: <a href="tel:+1234567890" style="color: #007bff; text-decoration: none;">+1 234 567 890</a></p>
+    <p>Mon-Fri: 9am - 6pm</p>
+</div>
+{% endblock %}

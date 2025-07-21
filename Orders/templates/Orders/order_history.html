@@ -5,55 +5,85 @@ Order History
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container" style="padding: 20px;">
     <h1>Your Order History</h1>
-    {% if order_history %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Date</th>
-                    <th>Total Amount</th>
-                    <th>Delivery Method</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in order_history %}
-                    <tr>
-                        <td>{{ order.order_number }}</td>
-                        <td>{{ order.created_at }}</td>
-                        <td>{{ order.total_price }}</td>
-                        <td>{{ order.delivery_method }}</td>
-                        <td>{{ order.status }}</td>
-                        <td>
-                            <a href="{% url 'order_details_view' order.order_number %}" class="btn btn-info">
-                                View Details
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
 
+    {% if order_history %}
+        <div style="overflow-x: auto;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Total Amount</th>
+                        <th>Delivery Method</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in order_history %}
+                        <tr>
+                            <td>{{ order.order_number }}</td>
+                            <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>${{ order.total_price }}</td>
+                            <td>{{ order.delivery_method }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if order.status == 'pending' %}bg-warning
+                                    {% elif order.status == 'completed' %}bg-success
+                                    {% elif order.status == 'cancelled' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ order.status|capfirst }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'order_details_view' order.order_number %}" class="btn btn-sm btn-info">
+                                    View Details
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-        <p>You have no orders in your history.</p>
+        <p>You have no completed orders in your history.</p>
     {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_css %}
 <style>
-    .table {
-        width: 100%;
-        margin-top: 20px;
-    }
     .table th, .table td {
         text-align: center;
+        vertical-align: middle;
     }
+
     .btn {
         margin: 5px;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+        .container {
+            padding: 10px;
+        }
+
+        h1 {
+            font-size: 22px;
+        }
+
+        .table th, .table td {
+            font-size: 13px;
+            padding: 8px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+        }
     }
 </style>
 {% endblock %}

@@ -6,29 +6,30 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import get_user_model
-
+from Products.views import get_top_sellers
 
 
 def home(request):
-    latest_products = Product.objects.order_by('-created_at')  # requires created_at field
-    valid_categories = []
+    latest_products = Product.objects.order_by('-created_at')
+    category_data = []
 
     for category in Category.objects.all():
         category_products = Product.objects.filter(category=category).order_by('-created_at')
         
-        # Check: at least 3 products AND latest product belongs to this category
         if category_products.count() >= 3 and category_products.first() in latest_products[:10]:
-            valid_categories.append({
+            category_data.append({
                 'category': category,
                 'products': category_products[:9]
             })
 
-        if len(valid_categories) == 5:
+        if len(category_data) == 5:
             break
+        
+    top_sellers = get_top_sellers()
 
     context = {
-        'category_data': valid_categories,
-        # ... any other data for homepage
+        'category_data': category_data,
+        'top_sellers': top_sellers,
     }
 
     return render(request, 'homepage.html', context)
@@ -41,7 +42,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('BlogPostList')
+            return redirect('home')
         else:
             return HttpResponse("Invalid credentials", status=401)
     return render(request, 'login.html')
@@ -65,7 +66,7 @@ def register_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)  # ✅ Auto-login
-            return redirect('Home')
+            return redirect('home')
 
     return render(request, 'register.html')
 
@@ -74,4 +75,4 @@ def register_view(request):
 def logout_view(request):
     if request.user.is_authenticated:
         logout(request)
-    return redirect('Home')
+    return redirect('home')

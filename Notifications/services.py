@@ -2,7 +2,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from twilio.rest import Client
 import os, random
-from .models import PhoneOTP, PhoneNumberField
+from .models import PhoneOTP
+from django.http import JsonResponse
 
 
 def send_otp_to_phone(phone_number):

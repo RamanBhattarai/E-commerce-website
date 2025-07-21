@@ -9,7 +9,7 @@ class Cart(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def total_price(self):
-        return sum(item.total_price() for item in self.items.all())
+        return sum(item.total_price for item in self.items.all())
 
     def __str__(self):
         return f"Cart of {self.user.username} created at {self.created_at}"
@@ -34,7 +34,7 @@ class Wishlist(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def total_price(self):
-        return sum(item.total_price() for item in self.items.all())
+        return sum(item.total_price for item in self.items.all())
 
     def __str__(self):
         return f"Wishlist of {self.user.username} created at {self.created_at}"

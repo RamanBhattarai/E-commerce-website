@@ -1,16 +1,90 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delivery Method</title>
+    <style>
+        body {
+            background-color: #f4faff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
-{% block title_content %}
-Delivery Method
-{% endblock %}
+        .container {
+            border: 2px solid #0ac;
+            background-color: #e6f7ff;
+            color: #003a63;
+            margin: 40px auto;
+            padding: 30px;
+            max-width: 600px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-{% block content %}
-<div style="border: 2px solid #0ac; background-color: #0ac; color:#2ef; margin: 20px; padding:20px">
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        form p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            padding: 12px 20px;
+            background-color: #007acc;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #005a99;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            text-align: center;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Choose Delivery Method</h2>
+
     <form method="post" action="{% url 'delivery' %}">
         {% csrf_token %}
         {{ form.as_p }}
+
         <button type="submit">✔ Confirm Delivery</button>
     </form>
-    <a href="{% url 'cart_view' %}" style="display:inline-block; border:1px solid #0a0; padding: 10px; margin:20px; background-color: #0a0; color: #101; text-decoration:none;">⬅ Back</a>
+
+    <a href="{% url 'cart_view' %}" class="back-link">⬅ Back to Cart</a>
 </div>
-{% endblock %}
+
+</body>
+</html>

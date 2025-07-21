@@ -1,7 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Order, OrderItem
-from Products.models import Product
+from .models import Order
 from Cart.models import Cart, CartItem
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
@@ -9,9 +8,10 @@ from reportlab.pdfgen import canvas
 from io import BytesIO
 
 
+
 @login_required(login_url='login')
 def order_view(request):
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    orders = Order.objects.filter(user=request.user).exclude(status='cancelled').order_by('-created_at')
 
     order_list = []
     for order in orders:
@@ -40,30 +40,17 @@ def order_details_view(request, order_number):
 
 
 @login_required(login_url='login')
-def new_order(request):
-    # Fetch the user's cart and its items
-    cart = get_object_or_404(Cart, user=request.user)
+def place_order(request):
+    # Make sure the cart exists and is not empty
+    cart = Cart.objects.filter(user=request.user).first()
     cart_items = CartItem.objects.filter(cart=cart)
 
-    if not cart_items.exists():
-        # Optionally, handle empty cart case
-        return redirect('cart_view')  # or show a message
+    if not cart or not cart_items.exists():
+        return redirect('cart_view')
 
-    # Create a new order for the user
-    order = Order.objects.create(user=request.user)
-
-    # Create OrderItems for each CartItem
-    for cart_item in cart_items:
-        OrderItem.objects.create(
-            order=order,
-            product=cart_item.product,
-            quantity=cart_item.quantity
-        )
-
-    # Optionally, clear the cart after creating the order
-    cart_items.delete()
-
-    return redirect('order_details_view', order_number=order.order_number)
+    # Temporarily store a flag or cart_id in session
+    request.session['placing_order'] = True
+    return redirect('delivery')
 
 
 @login_required(login_url='login')
