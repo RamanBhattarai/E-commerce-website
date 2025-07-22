@@ -40,6 +40,23 @@ def product_update(request, pk):
 
 
 def product_list(request, pk=None, category_id=None):
+    latest_products = Product.objects.order_by('-created_at')
+    category_data = []
+
+    for category in Category.objects.all():
+        category_products = Product.objects.filter(category=category).order_by('-created_at')
+        
+        if category_products.count() >= 3 and category_products.first() in latest_products[:10]:
+            category_data.append({
+                'category': category,
+                'products': category_products[:9]
+            })
+
+        if len(category_data) == 5:
+            break
+        
+    top_sellers = get_top_sellers()
+    
     if category_id:
         category = get_object_or_404(Category, id=category_id)
         products = Product.objects.filter(category=category).order_by('-created_at')
@@ -51,6 +68,8 @@ def product_list(request, pk=None, category_id=None):
         category = None
 
     context = {
+        'category_data': category_data,
+        'top_sellers': top_sellers,
         'products': products,
         'selected_category': category,
     }
@@ -62,10 +81,26 @@ def product_detail(request, pk):
 
     # Get related products (same category, exclude self)
     related_products = Product.objects.filter(category=product.category).exclude(pk=product.pk)[:6]
+    
+    latest_products = Product.objects.order_by('-created_at')
+    category_data = []
+
+    for category in Category.objects.all():
+        category_products = Product.objects.filter(category=category).order_by('-created_at')
+        
+        if category_products.count() >= 3 and category_products.first() in latest_products[:10]:
+            category_data.append({
+                'category': category,
+                'products': category_products[:9]
+            })
+
+        if len(category_data) == 5:
+            break
 
     context = {
         'product': product,
         'related_products': related_products,
+        'category_data': category_data,
         'descriptions': product.descriptions.all(),  # get all key-value description entries
         'product_reviews': product.reviews.all()
     }
@@ -73,6 +108,23 @@ def product_detail(request, pk):
 
 
 def rated_products_by_range(request):
+    latest_products = Product.objects.order_by('-created_at')
+    category_data = []
+
+    for category in Category.objects.all():
+        category_products = Product.objects.filter(category=category).order_by('-created_at')
+        
+        if category_products.count() >= 3 and category_products.first() in latest_products[:10]:
+            category_data.append({
+                'category': category,
+                'products': category_products[:9]
+            })
+
+        if len(category_data) == 5:
+            break
+        
+    top_sellers = get_top_sellers()
+    
     # Get min and max from query params (e.g., ?min=3&max=4)
     min_rating = request.GET.get('min')
     max_rating = request.GET.get('max')
@@ -88,26 +140,56 @@ def rated_products_by_range(request):
         pass  # Ignore filtering if values are invalid
 
     products = products.order_by('-avg_rating')
-
-    return render(request, 'Products/product_list.html', {
+    
+    context = {
+        'category_data': category_data,
+        'top_sellers': top_sellers,
         'products': products,
         'min_rating': min_rating,
         'max_rating': max_rating,
-    })
+    }
+
+    return render(request, 'Products/product_list.html', context)
 
 
 def product_search(request):
+    latest_products = Product.objects.order_by('-created_at')
+    category_data = []
+
+    for category in Category.objects.all():
+        category_products = Product.objects.filter(category=category).order_by('-created_at')
+        
+        if category_products.count() >= 3 and category_products.first() in latest_products[:10]:
+            category_data.append({
+                'category': category,
+                'products': category_products[:9]
+            })
+
+        if len(category_data) == 5:
+            break
+        
+    top_sellers = get_top_sellers()
     
     query = request.GET.get('q')
     products = Product.objects.none()
 
     if query:
+        products = Product.objects.filter(Q(name__icontains=query)).distinct().order_by('-created_at')
+        
+    if not products:
         products = Product.objects.filter(
             Q(name__icontains=query) |
             Q(descriptions__value__icontains=query)
         ).distinct().order_by('-created_at')
+    
+    context = {
+        'category_data': category_data,
+        'top_sellers': top_sellers,
+        'products': products,
+        'query': query
+    }
 
-    return render(request, 'Products/product_list.html', {'products': products, 'query': query})
+    return render(request, 'Products/product_list.html', context)
 
 
 def get_top_sellers(limit=5):

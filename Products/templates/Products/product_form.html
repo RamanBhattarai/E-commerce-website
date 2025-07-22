@@ -1,56 +1,14 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Product Form</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-    .container {
-      margin: 20px auto;
-      max-width: 700px;
-      border: 2px solid #ccc;
-      padding: 20px;
-      border-radius: 8px;
-      background: #fafafa;
-    }
-    h2, h3 {
-      text-align: center;
-    }
-    .description-form {
-      border: 1px solid #ddd;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      position: relative;
-    }
-    .remove-description {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #e74c3c;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-    #add-description {
-      margin-top: 10px;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    button[type="submit"] {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+
+  <link rel="stylesheet" href="{% static 'css/product_form.css' %}">
+
 </head>
 <body>
 
@@ -60,10 +18,15 @@
     {% csrf_token %}
     {{ form.as_p }}
 
+    <!-- Image Preview -->
+    <div class="form-group">
+      <label for="id_image">Preview:</label><br>
+      <img id="imagePreview" class="image-preview" src="#" alt="Image preview..." style="display:none;">
+    </div>
+
     <h3>Product Descriptions</h3>
     <div id="descriptions-container">
       {{ formset.management_form }}
-
       {% for form in formset.forms %}
       <div class="description-form">
         {{ form.as_p }}
@@ -76,87 +39,11 @@
     </div>
 
     <button type="button" id="add-description">Add Description</button>
-    <button type="submit">Save</button>
+    <button type="submit">Save Product</button>
   </form>
 </div>
 
-<script>
-  const addButton = document.getElementById('add-description');
-  const container = document.getElementById('descriptions-container');
-  const totalForms = document.querySelector('#id_descriptions-TOTAL_FORMS');
-
-  function attachRemoveHandler(button) {
-    button.addEventListener('click', () => {
-      const formToRemove = button.closest('.description-form');
-      formToRemove.remove();
-
-      // Update total forms count
-      const forms = container.querySelectorAll('.description-form');
-      totalForms.value = forms.length;
-
-      // Re-index form inputs for correct naming
-      forms.forEach((form, index) => {
-        form.querySelectorAll('input, select, textarea, label').forEach(el => {
-          if (el.name) {
-            el.name = el.name.replace(/-\d+-/, `-${index}-`);
-          }
-          if (el.id) {
-            el.id = el.id.replace(/-\d+-/, `-${index}-`);
-          }
-          if (el.htmlFor) {
-            el.htmlFor = el.htmlFor.replace(/-\d+-/, `-${index}-`);
-          }
-        });
-      });
-    });
-  }
-
-  // Attach remove handlers to existing remove buttons
-  document.querySelectorAll('.remove-description').forEach(btn => {
-    attachRemoveHandler(btn);
-  });
-
-  addButton.addEventListener('click', () => {
-    const formIdx = parseInt(totalForms.value);
-
-    // Clone first form or create empty form if none exist
-    let emptyForm = container.querySelector('.description-form');
-    if (emptyForm) {
-      emptyForm = emptyForm.cloneNode(true);
-    } else {
-      alert('No initial form template available.');
-      return;
-    }
-
-    // Clear input/select/textarea values in the cloned form
-    emptyForm.querySelectorAll('input, select, textarea').forEach(input => {
-      if (input.type === 'checkbox' || input.type === 'radio') {
-        input.checked = false;
-      } else {
-        input.value = '';
-      }
-    });
-
-    // Remove DELETE checkbox if present (for new forms)
-    const deleteLabel = emptyForm.querySelector('label');
-    if (deleteLabel) deleteLabel.remove();
-
-    // Update all input/select/textarea name/id/htmlFor attributes with the new index
-    emptyForm.querySelectorAll('input, select, textarea, label').forEach(el => {
-      if (el.name) el.name = el.name.replace(/-\d+-/, `-${formIdx}-`);
-      if (el.id) el.id = el.id.replace(/-\d+-/, `-${formIdx}-`);
-      if (el.htmlFor) el.htmlFor = el.htmlFor.replace(/-\d+-/, `-${formIdx}-`);
-    });
-
-    // Append new form and increment total forms count
-    container.appendChild(emptyForm);
-    totalForms.value = formIdx + 1;
-
-    // Attach remove event to the new button
-    const removeBtn = emptyForm.querySelector('.remove-description');
-    if (removeBtn) attachRemoveHandler(removeBtn);
-  });
-</script>
+<script src="{% static 'js/product_form.js' %}"></script>
 
 </body>
 </html>

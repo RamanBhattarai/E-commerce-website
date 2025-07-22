@@ -1,0 +1,210 @@
+body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f8fc;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #005792;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .navbar li {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-size: 24px;
+      background-color: #0077cc;
+      padding: 10px;
+      border-radius: 50%;
+      transition: background-color 0.3s ease;
+      line-height: 1;
+    }
+    .navbar a:hover {
+      background-color: #005fa3;
+    }
+    .navbar span {
+      color: white;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    /* Page container */
+    .container {
+      max-width: 450px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      padding: 30px 35px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin: 0 0 10px 0;
+      color: #333;
+      font-size: 1.75rem;
+    }
+    .greeting {
+      text-align: center;
+      color: #666;
+      margin: 0 0 30px 0;
+      font-size: 0.95rem;
+    }
+
+    /* Django form structure (works with {{ form.as_p }}) */
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    form p {
+      margin: 0 0 20px 0;
+    }
+    form p:last-of-type {
+      margin-bottom: 0; /* before submit button spacing handled below */
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 6px;
+      color: #444;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    input[type="phone_number"]{
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      width: 90%;
+      box-sizing: border-box;
+    }
+    
+    input[type="username"]{
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      width: 90%;
+      box-sizing: border-box;
+    }
+
+    input[type="full_name"]{
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      width: 90%;
+      box-sizing: border-box;
+    }
+
+    input[type="address"]{
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      width: 90%;
+      box-sizing: border-box;
+    }
+
+
+    input[type="preferred_shipping_address"]{
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      width: 90%;
+      box-sizing: border-box;
+    }
+    
+    
+    input[type="email"] {
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      width: 90%;
+      box-sizing: border-box;
+    }
+
+    form input:focus,
+    form select:focus,
+    form textarea:focus {
+      border-color: #007acc;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0,122,204,0.25);
+    }
+
+    /* Help text (Django renders <span class="helptext"> or <div> in some widgets) */
+    .helptext {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.8rem;
+      color: #777;
+      line-height: 1.3;
+    }
+    /* If Django renders ul.helptext (rare) */
+    ul.helptext {
+      margin: 4px 0 0 0;
+      padding-left: 18px;
+      font-size: 0.8rem;
+      color: #777;
+    }
+
+    /* Error messages */
+    ul.errorlist {
+      margin: 0 0 6px 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.85rem;
+      color: #b00020;
+      font-weight: 600;
+    }
+    ul.errorlist li {
+      margin: 0;
+    }
+
+    /* Submit button */
+    button[type="submit"] {
+      margin-top: 25px;
+      background-color: #007acc;
+      color: #fff;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button[type="submit"]:hover {
+      background-color: #005fa3;
+    }
+
+    /* Placeholder style */
+    ::placeholder {
+      color: #aaa;
+      opacity: 1;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 600px) {
+      .container {
+        margin: 40px 16px;
+        padding: 24px;
+      }
+      .navbar {
+        justify-content: center;
+      }
+    }

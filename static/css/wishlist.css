@@ -1,0 +1,130 @@
+.content {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+.sidebar {
+    width: 10%;
+}
+
+.wishlist-container {
+    width: 80%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.wishlist-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+.wishlist-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.btn {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-outline-success {
+    background-color: transparent;
+    border: 1px solid #2ecc71;
+    color: #2ecc71;
+}
+
+.btn-outline-success:hover {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #ccc;
+    color: #333;
+    padding: 8px 14px;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 4px;
+}
+
+.messages {
+    padding: 0 20px;
+}
+
+.wishlist-card {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .content {
+    flex-direction: column;
+    }
+
+    .sidebar {
+    display: none;
+    }
+
+    .wishlist-container {
+    width: 100%;
+    }
+
+    .table {
+    display: none;
+    }
+
+    .wishlist-card {
+    display: block;
+    margin-bottom: 20px;
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .wishlist-card img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    }
+
+    .wishlist-card .card-info {
+    margin-bottom: 10px;
+    }
+
+    .wishlist-card .card-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    }
+}

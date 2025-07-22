@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Order Details</title>
+    <style>
+        /* Basic reset and container */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        
+        /* Navbar */
+        nav.navbar {
+        background-color: #24afff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        border-radius: 0 0 8px 8px;
+        gap: 15px;
+        }
+        nav.navbar ul {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        }
+        nav.navbar ul li {
+        text-align: center;
+        font-size: 14px;
+        color: #eef6ff;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: color 0.25s ease;
+        }
+        nav.navbar ul li a {
+        font-size: 24px;
+        color: white;
+        display: block;
+        padding: 4px;
+        border-radius: 6px;
+        transition: background-color 0.3s ease;
+        }
+        nav.navbar ul li:hover,
+        nav.navbar ul li a:hover {
+        color: #a3d2ff;
+        }
+        nav.navbar ul li a:hover {
+        background-color: rgba(255 255 255 / 0.2);
+        }
+        nav.navbar ul li span {
+        margin-top: 4px;
+        font-weight: 600;
+        user-select: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .order-info p {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            color: #444;
+        }
+        th {
+            background-color: #f1f1f1;
+            font-weight: 600;
+        }
+
+        td img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        td.product-name {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-right: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            user-select: none;
+            border: none;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0069d9;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            .order-info p {
+                font-size: 14px;
+            }
+            table, th, td {
+                font-size: 14px;
+                padding: 8px;
+            }
+            td img {
+                width: 40px;
+                height: 40px;
+            }
+            h1, h3 {
+                font-size: 20px;
+            }
+            .btn {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+            td.product-name {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" role="navigation" aria-label="Primary navigation">
+    <!-- Left Icons -->
+    <ul>
+      <li>
+        <a href="{% url 'home' %}" title="Home" aria-label="Home">🏠</a>
+        <span>Home</span>
+      </li>
+      <li>
+        <a href="{% url 'cart_view' %}" title="Cart" aria-label="Cart">🛒</a>
+        <span>Cart</span>
+      </li>
+      <li>
+        <a href="{% url 'order_view' %}" title="Orders" aria-label="Orders">🚚</a>
+        <span>Orders</span>
+      </li>
+    </ul>
+
+    <!-- Right Icons -->
+    <ul>
+      {% if user.is_authenticated %}
+        <li>
+          <a href="{% url 'order_history' %}" title="Order History" aria-label="Order History">🎉</a>
+          <span>Order History</span>
+        </li>
+        <li>
+          <a href="{% url 'wishlist' %}" title="Wishlist" aria-label="Wishlist">🎁</a>
+          <span>Wishlist</span>
+        </li>
+        <li>
+          <a href="{% url 'profile' %}" title="Profile" aria-label="Profile">🙎‍♂️</a>
+          <span>Profile</span>
+        </li>
+        <li>
+          <a href="{% url 'logout' %}" title="Logout" aria-label="Logout">🚪</a>
+          <span>Logout</span>
+        </li>
+      {% else %}
+        <li>
+          <a href="{% url 'login' %}" title="Login" aria-label="Login">🔐</a>
+          <span>Login</span>
+        </li>
+        <li>
+          <a href="{% url 'register' %}" title="Register" aria-label="Register">📝</a>
+          <span>Register</span>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+
+    <div class="container">
+        <h1>Order Details</h1>
+        
+        <div class="order-info">
+            <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+            <p><strong>Status:</strong> {{ order.status|capfirst }}</p>
+            <p><strong>Order Date:</strong> {{ order.created_at|date:"Y-m-d H:i" }}</p>
+            <p><strong>Total Price:</strong> {{ total_price }}</p>
+            <p><strong>Delivery Method:</strong> {{ order.delivery_method }}</p>
+        </div>
+
+        <h3>Items in this Order</h3>
+        {% if order_items %}
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order_items %}
+                        <tr>
+                            <td class="product-name">
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" />
+                                <span>{{ item.product.name }}</span>
+                            </td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.product.price }}</td>
+                            <td>${{ item.total_price }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <br><hr>
+                <p style="margin: 20px"><h3><i>Total Amount: </i>{{ total_price }}</h3></p>
+            </div>
+        {% else %}
+            <p>No items found in this order.</p>
+        {% endif %}
+        
+        <!-- Payment Section -->
+        <div style="margin-top: 10px;">
+            {% if order.status == 'pending' %}
+                {% if payment and payment.method %}
+                    <p><strong>Selected Payment Method:</strong>
+                        {% if payment.method == 'digital' %} Digital Payment (Khalti)
+                        {% elif payment.method == 'cash_on_delivery' %} Cash On Delivery
+                        {% endif %}
+                    </p>
+
+                    {% if payment.status == 'unpaid' %}
+                        <form method="post" action="{% url 'payment_method' order.order_number %}" id="payment-method-form">
+                            {% csrf_token %}
+                            <label for="method">Change Payment Method:</label>
+                            <select name="method" id="method" required>
+                                <option value="">-- Select Payment Method --</option>
+                                <option value="digital" {% if payment.method == "digital" %}selected{% endif %}>Digital Payment (Khalti)</option>
+                                <option value="cash_on_delivery" {% if payment.method == "cash_on_delivery" %}selected{% endif %}>Cash On Delivery</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary" style="margin-top:10px;">Update Method</button>
+                        </form>
+                    {% endif %}
+
+                {% else %}
+                    <form method="post" action="{% url 'payment_method' order.order_number %}" id="payment-method-form">
+                        {% csrf_token %}
+                        <label for="method">Choose Payment Method:</label>
+                        <select name="method" id="method" required>
+                            <option value="">-- Select Payment Method --</option>
+                            <option value="digital">Digital Payment (Khalti)</option>
+                            <option value="cash_on_delivery">Cash On Delivery</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary" style="margin-top:10px;">Confirm Payment Method</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+
+
+        {% if payment and payment.method == 'digital' and order.status == 'pending' %}
+            <a href="{% url 'checkout' order.order_number %}" class="btn btn-success">
+                Proceed to Khalti Payment
+            </a>
+        {% endif %}
+
+
+        <div>
+            <a href="{% url 'order_view' %}" class="btn btn-secondary">Back to Orders</a>
+            {% if order.status == 'pending' %}
+                <a href="{% url 'invoice_generation' order.order_number %}" class="btn btn-primary">Download Invoice (PDF)</a>
+                <a href="{% url 'cancel_order' order.order_number %}" class="btn btn-danger">Cancel Order</a>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

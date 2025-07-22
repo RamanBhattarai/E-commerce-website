@@ -1,337 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Your Wishlist</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f2f2f2;
-    }
+{% extends "base.html" %} {% load static %} {% block title_content %} Your
+Wishlist
+<link rel="stylesheet" href="{% static 'css/wishlist.css' %}" />
+{% endblock %} {% block content %}
+<div class="wishlist-container">
+  <h1>Your Wishlist</h1>
 
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #24afff;
-      padding: 10px 20px;
-      flex-wrap: wrap;
-      border-bottom: 1px solid #ddd;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+  {% if wishlist_items %}
+  <!-- Desktop Table -->
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Total</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in wishlist_items %}
+      <tr>
+        <td>
+          <img
+            src="{{ item.product.image.url }}"
+            alt="Product Image"
+            class="wishlist-image"
+          />
+        </td>
+        <td>{{ item.product.name }}</td>
+        <td>${{ item.product.price }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>${{ item.total_price }}</td>
+        <td>
+          <form
+            method="post"
+            action="{% url 'remove_from_wishlist' item.id %}"
+            style="display: inline"
+          >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Remove</button>
+          </form>
+          <form
+            method="post"
+            action="{% url 'add_to_cart' item.id %}"
+            style="display: inline"
+          >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-success">
+              🛒 Add to Cart
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-    .navbar ul {
-      list-style: none;
-      display: flex;
-      gap: 20px;
-      padding: 0;
-      margin: 0;
-    }
-
-    .navbar a {
-      text-decoration: none;
-      color: black;
-      font-size: 24px;
-      transition: 0.2s;
-    }
-
-    .navbar a:hover {
-      color: white;
-    }
-
-    .navbar span {
-      font-size: 14px;
-      display: block;
-      text-align: center;
-    }
-
-    .search-bar {
-      width: 100%;
-      max-width: 600px;
-      margin: 10px auto;
-    }
-
-    .search-wrapper {
-      display: flex;
-      align-items: center;
-      background-color: #fff;
-      border-radius: 40px;
-      padding: 1px 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border: 1px solid #e0e0e0;
-    }
-
-    .search-wrapper input {
-      flex: 1;
-      border: none;
-      outline: none;
-      padding: 12px;
-      font-size: 16px;
-      background: transparent;
-    }
-
-    .search-wrapper button {
-      background-color: #635dc7;
-      color: white;
-      padding: 10px 24px;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-      font-size: 15px;
-      transition: background 0.3s;
-    }
-
-    .search-wrapper button:hover {
-      background-color: #3727e0;
-    }
-
-    .content {
-      display: flex;
-      flex-direction: row;
-      gap: 20px;
-      padding: 20px;
-      flex-wrap: wrap;
-    }
-
-    .sidebar {
-      width: 10%;
-    }
-
-    .wishlist-container {
-      width: 80%;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .wishlist-container h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .table th,
-    .table td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: center;
-    }
-
-    .wishlist-image {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 5px;
-    }
-
-    .btn {
-      padding: 6px 12px;
-      font-size: 14px;
-      border: none;
-      border-radius: 5px;
-      margin: 5px;
-      cursor: pointer;
-    }
-
-    .btn-danger {
-      background-color: #e74c3c;
-      color: white;
-    }
-
-    .btn-outline-success {
-      background-color: transparent;
-      border: 1px solid #2ecc71;
-      color: #2ecc71;
-    }
-
-    .btn-outline-success:hover {
-      background-color: #2ecc71;
-      color: white;
-    }
-
-    .btn-secondary {
-      background-color: #ccc;
-      color: #333;
-      padding: 8px 14px;
-      text-decoration: none;
-      display: inline-block;
-      border-radius: 4px;
-    }
-
-    .messages {
-      padding: 0 20px;
-    }
-
-    .wishlist-card {
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      .content {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        display: none;
-      }
-
-      .wishlist-container {
-        width: 100%;
-      }
-
-      .table {
-        display: none;
-      }
-
-      .wishlist-card {
-        display: block;
-        margin-bottom: 20px;
-        background: #fafafa;
-        border-radius: 8px;
-        padding: 15px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-      }
-
-      .wishlist-card img {
-        width: 100%;
-        max-height: 200px;
-        object-fit: cover;
-        border-radius: 5px;
-        margin-bottom: 10px;
-      }
-
-      .wishlist-card .card-info {
-        margin-bottom: 10px;
-      }
-
-      .wishlist-card .card-buttons {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div>
-    <nav class="navbar">
-      <ul>
-        <li><a href="{% url 'home' %}">🏠</a><span>Home</span></li>
-        <li><a href="{% url 'cart_view' %}">🛒</a><span>Cart</span></li>
-        <li><a href="{% url 'order_view' %}">🚚</a><span>Orders</span></li>
-      </ul>
-
-      <div class="search-bar">
-        <form method="get" action="{% url 'search' %}">
-          <div class="search-wrapper">
-            <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
-            <button type="submit">Search</button>
-          </div>
-        </form>
-      </div>
-
-      <ul>
-        {% if user.is_authenticated %}
-          <li><a href="{% url 'order_history' %}">🎉</a><span>Order History</span></li>
-          <li><a href="{% url 'wishlist' %}">🎁</a></li>
-          <li><a href="{% url 'profile' %}">🙎‍♂️</a><span>Profile</span></li>
-          <li><a href="{% url 'logout' %}">🚪</a><span>Logout</span></li>
-        {% else %}
-          <li><a href="{% url 'login' %}">🔐</a><span>Login</span></li>
-          <li><a href="{% url 'register' %}">📝</a><span>Register</span></li>
-        {% endif %}
-      </ul>
-    </nav>
-
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li class="alert alert-{{ message.tags }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
-    <div class="content">
-      <div class="sidebar"></div>
-
-      <div class="wishlist-container">
-        <h1>Your Wishlist</h1>
-
-        {% if wishlist_items %}
-          <!-- Desktop Table -->
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in wishlist_items %}
-                <tr>
-                  <td><img src="{{ item.product.image.url }}" alt="Product Image" class="wishlist-image"></td>
-                  <td>{{ item.product.name }}</td>
-                  <td>${{ item.product.price }}</td>
-                  <td>{{ item.quantity }}</td>
-                  <td>${{ item.total_price }}</td>
-                  <td>
-                    <form method="post" action="{% url 'remove_from_wishlist' item.id %}" style="display:inline;">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-danger">Remove</button>
-                    </form>
-                    <form method="post" action="{% url 'add_to_cart' item.id %}" style="display:inline;">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-outline-success">🛒 Add to Cart</button>
-                    </form>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-
-          <!-- Mobile Card View -->
-          {% for item in wishlist_items %}
-            <div class="wishlist-card">
-              <img src="{{ item.product.image.url }}" alt="Product Image">
-              <div class="card-info">
-                <strong>{{ item.product.name }}</strong><br>
-                Price: ${{ item.product.price }}<br>
-                Quantity: {{ item.quantity }}<br>
-                Total: ${{ item.total_price }}
-              </div>
-              <div class="card-buttons">
-                <form method="post" action="{% url 'remove_from_wishlist' item.id %}">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-danger">Remove</button>
-                </form>
-                <form method="post" action="{% url 'add_to_cart' item.id %}">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-outline-success">🛒 Add to Cart</button>
-                </form>
-              </div>
-            </div>
-          {% endfor %}
-        {% else %}
-          <p>Your wishlist is empty.</p>
-        {% endif %}
-
-        <hr>
-        <a href="{% url 'home' %}" class="btn-secondary">← Continue Shopping</a>
-      </div>
-
-      <div class="sidebar"></div>
+  <!-- Mobile Card View -->
+  {% for item in wishlist_items %}
+  <div class="wishlist-card">
+    <img src="{{ item.product.image.url }}" alt="Product Image" />
+    <div class="card-info">
+      <strong>{{ item.product.name }}</strong><br />
+      Price: ${{ item.product.price }}<br />
+      Quantity: {{ item.quantity }}<br />
+      Total: ${{ item.total_price }}
+    </div>
+    <div class="card-buttons">
+      <form method="post" action="{% url 'remove_from_wishlist' item.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Remove</button>
+      </form>
+      <form method="post" action="{% url 'add_to_cart' item.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-success">
+          🛒 Add to Cart
+        </button>
+      </form>
     </div>
   </div>
-</body>
-</html>
+  {% endfor %} {% else %}
+  <p>Your wishlist is empty.</p>
+  {% endif %}
+
+  <hr>
+  <a href="{% url 'home' %}" class="btn-secondary">← Continue Shopping</a>
+</div>
+{% endblock %}

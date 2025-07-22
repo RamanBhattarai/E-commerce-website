@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from io import BytesIO
+from Payments.models import Payment
 
 
 
@@ -19,7 +20,7 @@ def order_view(request):
             'order_number': order.order_number,
             'status': order.status,
             'created_at': order.created_at,
-            'total_price': order.total_price(),
+            'total_price': order.total_price,
         })
 
     return render(request, 'Orders/order_view.html', {'orders': order_list})
@@ -30,12 +31,14 @@ def order_details_view(request, order_number):
     
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
     order_items = order.items.all()
-    total_price = order.total_price()
+    total_price = order.total_price
+    payment = Payment.objects.filter(order=order).first()
 
     return render(request, 'Orders/order_details_view.html', {
         'order': order,
         'order_items': order_items,
-        'total_price': total_price
+        'total_price': total_price,
+        'payment': payment,
     })
 
 

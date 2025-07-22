@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block title_content %}
 Your Orders
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -24,7 +27,9 @@ Your Orders
                 <tbody>
                     {% for order in orders %}
                         <tr>
-                            <td>{{ order.order_number }}</td>
+                            <td style="white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis;">
+                                {{ order.order_number }}
+                            </td>
                             <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
                             <td>${{ order.total_price }}</td>
                             <td>{{ order.delivery_method }}</td>
@@ -39,21 +44,23 @@ Your Orders
                             </td>
                             <td>
                                 <div class="d-flex flex-wrap gap-2 justify-content-center">
-                                    <a href="{% url 'order_details_view' order.order_number %}" class="btn btn-sm btn-info">
-                                        View Details
-                                    </a>
+
+                                    <!-- View Details as button -->
+                                    <form action="{% url 'order_details_view' order.order_number %}" method="get">
+                                        <button type="submit" class="btn btn-info btn-sm">View Details</button>
+                                    </form>
 
                                     {% if order.status == 'pending' %}
+                                        <!-- Cancel Order -->
                                         <form method="post" action="{% url 'cancel_order' order.order_number %}">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                Cancel Order
-                                            </button>
+                                            <button type="submit" class="btn btn-danger btn-sm">Cancel Order</button>
                                         </form>
 
-                                        <a href="{% url 'invoice_generation' order.order_number %}" class="btn btn-sm btn-secondary">
-                                            Invoice (PDF)
-                                        </a>
+                                        <!-- Invoice -->
+                                        <form action="{% url 'invoice_generation' order.order_number %}" method="get">
+                                            <button type="submit" class="btn btn-secondary btn-sm">Invoice (PDF)</button>
+                                        </form>
                                     {% endif %}
                                 </div>
                             </td>
@@ -68,31 +75,3 @@ Your Orders
 </div>
 {% endblock %}
 
-{% block extra_css %}
-<style>
-    .table th, .table td {
-        text-align: center;
-        vertical-align: middle;
-    }
-
-    .btn {
-        margin: 3px;
-    }
-
-    @media (max-width: 768px) {
-        .btn {
-            width: 100%;
-        }
-    }
-
-    .badge {
-        padding: 5px 10px;
-        font-size: 0.9em;
-    }
-
-    .bg-warning { background-color: #ffc107; color: #000; }
-    .bg-success { background-color: #28a745; color: #fff; }
-    .bg-danger  { background-color: #dc3545; color: #fff; }
-    .bg-secondary { background-color: #6c757d; color: #fff; }
-</style>
-{% endblock %}

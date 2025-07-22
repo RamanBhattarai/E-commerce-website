@@ -1,41 +1,68 @@
 {% extends "base.html" %}
 
-{% block title_content %}
+{% block title %}
 Product Details
+{% endblock %}
+
+{% block sidebar-left %}
+      <!-- Optional sidebar content -->
+    <h3 style="margin-top: 20px">Categories</h3>
+    <ul>
+        {% for item in category_data %}
+        <li><a href="{% url 'product_list_by_category' item.category.id %}">{{ item.category.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <hr />
+
+    <h3>Ratings</h3>
+    <ul>
+        <li><a href="{% url 'rated_products' %}?min=0&max=1">★☆☆☆☆</a></li>
+        <li><a href="{% url 'rated_products' %}?min=1&max=2">★★☆☆☆</a></li>
+        <li><a href="{% url 'rated_products' %}?min=2&max=3">★★★☆☆</a></li>
+        <li><a href="{% url 'rated_products' %}?min=3&max=4">★★★★☆</a></li>
+        <li><a href="{% url 'rated_products' %}?min=4&max=5">★★★★★</a></li>
+    </ul>
 {% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="product-details">
-        <h1>{{ product.name }}</h1>
-        {% if product.avg_rating %}
-            <p class="rating">Average Rating: {{ product.avg_rating|floatformat:1 }}⭐ ({{ product.reviews.count }} reviews)</p>
-        {% else %}
-            <p class="rating">No ratings yet.</p>
-        {% endif %}
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-        <p class="price">Price: ${{ product.price }}</p>
-        <p>Brand: {{ product.brand }}</p>
-        <p>Status: {{ product.get_status_display }}</p>
+        <div class="image-section">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+        </div>
+        <div class="info-section">
+            <h2>{{ product.name }}</h2>
+            {% if product.avg_rating %}
+                <p class="rating">Average Rating: {{ product.avg_rating|floatformat:1 }}⭐ ({{ product.reviews.count }} reviews)</p>
+            {% else %}
+                <p class="rating">No ratings yet.</p>
+            {% endif %}
+            <p class="price">Price: ${{ product.price }}</p>
+            <p>Brand: {{ product.brand }}</p>
+            <p>Status: {{ product.get_status_display }}</p>
 
-        <h3>Specifications</h3>
-        <table class="specs-table">
-            {% for desc in descriptions %}
-                <tr>
-                    <td>{{ desc.key }}</td>
-                    <td>: {{ desc.value }}</td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="2">No specifications available.</td>
-                </tr>
-            {% endfor %}
-        </table>
+            <h3>Specifications</h3>
+            <table class="specs-table">
+                {% for desc in descriptions %}
+                    <tr>
+                        <td>{{ desc.key }}</td>
+                        <td>: {{ desc.value }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2">No specifications available.</td>
+                    </tr>
+                {% endfor %}
+            </table>
 
-        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">🛒 Add to Cart</a>
-        <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-secondary">💖 Add to Wishlist</a>
-
-        <hr><hr>
+            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">🛒 Add to Cart</a>
+            <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-secondary">🎁 Add to Wishlist</a>
+        </div>
+    </div>
+    <div>
+        <br>
+        <hr>
         <h3>Leave a Review</h3>
         <form id="reviewForm" method="post" action="{% url 'submit_review' product.id %}">
             {% csrf_token %}
@@ -87,7 +114,7 @@ Product Details
             </form>
             <form method="post" action="{% url 'add_to_wishlist' related_product.id %}">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-outline-secondary btn-sm">💖 Add to Wishlist</button>
+                <button type="submit" class="btn btn-outline-secondary btn-sm">🎁 Add to Wishlist</button>
             </form>
         </div>
         {% endfor %}
@@ -98,21 +125,23 @@ Product Details
 {% block extra_css %}
 <style>
 .container {
-    max-width: 1100px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
 }
 
 .product-details {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    flex-direction: row;  
 }
 
 .product-details h1 {
-    font-size: 28px;
-    margin-bottom: 10px;
+    font-size: 20px;
+    margin-bottom: 5px;
 }
 
 .product-details p {
@@ -121,10 +150,21 @@ Product Details
 }
 
 .product-image {
-    max-width: 100%;
+    width: 100%;
+    max-width: 400px;
     height: auto;
     border-radius: 8px;
-    margin: 20px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.image-section {
+    flex: 1 1 300px;
+    text-align: center;
+}
+
+.info-section {
+    flex: 1 1 300px;
+    text-align: center;
 }
 
 .price {
@@ -223,19 +263,10 @@ select {
     margin-bottom: 5px;
 }
 
-/* Responsive layout */
 @media (max-width: 768px) {
-    .product-list {
+    .product-details {
         flex-direction: column;
         align-items: center;
-    }
-
-    .specs-table, .reviews-table, textarea, select {
-        width: 100%;
-    }
-
-    .product-item {
-        width: 90%;
     }
 }
 </style>

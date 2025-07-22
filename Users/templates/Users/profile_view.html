@@ -1,248 +1,172 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Profile</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
-            padding: 0;
-        }
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/profile_view.css' %}" />
+  </head>
+  <body>
+    <nav class="navbar" role="navigation" aria-label="Primary navigation">
+      <!-- Left Icons -->
+      <ul>
+        <li>
+          <a href="{% url 'home' %}" title="Home" aria-label="Home">🏠</a>
+          <span>Home</span>
+        </li>
+        <li>
+          <a href="{% url 'cart_view' %}" title="Cart" aria-label="Cart">🛒</a>
+          <span>Cart</span>
+        </li>
+        <li>
+          <a href="{% url 'order_view' %}" title="Orders" aria-label="Orders"
+            >🚚</a
+          >
+          <span>Orders</span>
+        </li>
+      </ul>
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #007bff;
-            padding: 15px 30px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+      <!-- Search Bar -->
+      <form
+        method="get"
+        action="{% url 'search' %}"
+        class="search-form"
+        role="search"
+        aria-label="Product search"
+      >
+        <div>
+          <input
+            type="text"
+            name="q"
+            placeholder="Search products..."
+            value="{{ request.GET.q }}"
+            aria-label="Search products"
+          />
+          <button type="submit">Search</button>
+        </div>
+      </form>
 
-        .navbar ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-            margin: 0;
-            padding: 0;
-        }
+      <!-- Right Icons -->
+      <ul>
+        {% if user.is_authenticated %}
+        <li>
+          <a
+            href="{% url 'order_history' %}"
+            title="Order History"
+            aria-label="Order History"
+            >🎉</a
+          >
+          <span>Order History</span>
+        </li>
+        <li>
+          <a href="{% url 'wishlist' %}" title="Wishlist" aria-label="Wishlist"
+            >🎁</a
+          >
+          <span>Wishlist</span>
+        </li>
+        <li>
+          <a href="{% url 'profile' %}" title="Profile" aria-label="Profile"
+            >🙎‍♂️</a
+          >
+          <span>Profile</span>
+        </li>
+        <li>
+          <a href="{% url 'logout' %}" title="Logout" aria-label="Logout">🚪</a>
+          <span>Logout</span>
+        </li>
+        {% else %}
+        <li>
+          <a href="{% url 'login' %}" title="Login" aria-label="Login">🔐</a>
+          <span>Login</span>
+        </li>
+        <li>
+          <a href="{% url 'register' %}" title="Register" aria-label="Register"
+            >📝</a
+          >
+          <span>Register</span>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
 
-        .navbar a {
-            font-size: 22px;
-            text-decoration: none;
-            color: #fff;
-            transition: transform 0.2s;
-        }
+    <div class="container">
+      <h1>User Profile</h1>
+      <table class="profile-table">
+        <tr>
+          <td>Username:</td>
+          <td>{{ profile.username }}</td>
+        </tr>
+        <tr>
+          <td>Email:</td>
+          <td>{{ profile.email }}</td>
+        </tr>
+        <tr>
+          <td>Full Name:</td>
+          <td>{{ profile.get_full_name }}</td>
+        </tr>
+        <tr>
+          <td>Last Login:</td>
+          <td>{{ profile.last_login|date:"F j, Y, g:i a" }}</td>
+        </tr>
+        <tr>
+          <td>Account Created:</td>
+          <td>{{ profile.date_joined|date:"F j, Y, g:i a" }}</td>
+        </tr>
+        <tr>
+          <td>Address:</td>
+          <td>{{ profile.address }}</td>
+        </tr>
+        <tr>
+          <td>Phone Number:</td>
+          <td>{{ profile.phone_number }}</td>
+        </tr>
+        <tr>
+          <td>Preferred Shipping Address:</td>
+          <td>{{ profile.preferred_shipping_address }}</td>
+        </tr>
+        <tr>
+          <td>Number of Current Orders:</td>
+          <td>{{ order.count }}</td>
+        </tr>
+      </table>
 
-        .navbar a:hover {
-            transform: scale(1.2);
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
-
-        .profile-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .profile-table tr {
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .profile-table td {
-            padding: 12px 8px;
-        }
-
-        .profile-table td:first-child {
-            font-weight: 600;
-            color: #555;
-            width: 40%;
-        }
-
-        .actions {
-            text-align: center;
-            margin-top: 40px;
-        }
-
-        .actions a,
-        .actions button {
-            display: inline-block;
-            margin: 10px 12px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-
-        .btn-edit {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .btn-edit:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-password {
-            background-color: #ff9800;
-            color: white;
-        }
-
-        .btn-password:hover {
-            background-color: #e68900;
-        }
-
-        .btn-delete {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .btn-delete:hover {
-            background-color: #c82333;
-        }
-
-        /* Modal */
-        #deleteModal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-        }
-
-        .modal-content h2 {
-            margin-top: 0;
-        }
-
-        .modal-content p {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .modal-content button {
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 5px;
-            border: none;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        .modal-confirm {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .modal-cancel {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        @media (max-width: 600px) {
-            .navbar ul {
-                gap: 12px;
-            }
-
-            .navbar a {
-                font-size: 20px;
-            }
-
-            .container {
-                margin: 20px;
-                padding: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-
-<div class="navbar">
-    <ul>
-        <li><a href="{% url 'home' %}" title="Home">🏠</a></li>
-        <li><a href="{% url 'cart_view' %}" title="Cart">🛒</a></li>
-        <li><a href="{% url 'order_view' %}" title="Orders">🚚</a></li>
-    </ul>
-    <ul>
-        <li><a href="{% url 'order_history' %}" title="Order History">🎉</a></li>
-        <li><a href="{% url 'wishlist' %}" title="Wishlist">🎁</a></li>
-        <li><a href="{% url 'profile' %}" title="Profile">🙎‍♂️</a></li>
-        <li><a href="{% url 'logout' %}" title="Logout">🚀</a></li>
-    </ul>
-</div>
-
-<div class="container">
-    <h1>User Profile</h1>
-    <table class="profile-table">
-        <tr><td>Username:</td><td>{{ profile.username }}</td></tr>
-        <tr><td>Email:</td><td>{{ profile.email }}</td></tr>
-        <tr><td>Full Name:</td><td>{{ profile.get_full_name }}</td></tr>
-        <tr><td>Last Login:</td><td>{{ profile.last_login|date:"F j, Y, g:i a" }}</td></tr>
-        <tr><td>Account Created:</td><td>{{ profile.date_joined|date:"F j, Y, g:i a" }}</td></tr>
-        <tr><td>Address:</td><td>{{ profile.address }}</td></tr>
-        <tr><td>Phone Number:</td><td>{{ profile.phone_number }}</td></tr>
-        <tr><td>Preferred Shipping Address:</td><td>{{ profile.preferred_shipping_address }}</td></tr>
-        <tr><td>Number of Current Orders:</td><td>{{ order.count }}</td></tr>
-    </table>
-
-    <div class="actions">
+      <div class="actions">
         <a href="{% url 'edit_profile' %}" class="btn-edit">Edit Profile</a>
-        <a href="{% url 'change_password' %}" class="btn-password">Change Password</a>
+        <a href="{% url 'change_password' %}" class="btn-password"
+          >Change Password</a
+        >
         <button class="btn-delete" onclick="openModal()">Delete Account</button>
+      </div>
     </div>
-</div>
 
-<!-- Delete Modal -->
-<div id="deleteModal">
-    <div class="modal-content">
+    <!-- Delete Modal -->
+    <div id="deleteModal">
+      <div class="modal-content">
         <h2>Confirm Account Deletion</h2>
-        <p>This action cannot be undone. Are you sure you want to delete your account?</p>
+        <p>
+          This action cannot be undone. Are you sure you want to delete your
+          account?
+        </p>
         <form method="post" action="{% url 'delete_account' %}">
-            {% csrf_token %}
-            <button type="submit" class="modal-confirm">Yes, Delete</button>
-            <button type="button" class="modal-cancel" onclick="closeModal()">Cancel</button>
+          {% csrf_token %}
+          <button type="submit" class="modal-confirm">Yes, Delete</button>
+          <button type="button" class="modal-cancel" onclick="closeModal()">
+            Cancel
+          </button>
         </form>
+      </div>
     </div>
-</div>
+    <script>
+      function openModal() {
+        document.getElementById("deleteModal").style.display = "flex";
+      }
 
-<script>
-    function openModal() {
-        document.getElementById('deleteModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('deleteModal').style.display = 'none';
-    }
-</script>
-
-</body>
+      function closeModal() {
+        document.getElementById("deleteModal").style.display = "none";
+      }
+    </script>
+  </body>
 </html>

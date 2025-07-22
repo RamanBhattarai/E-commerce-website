@@ -4,9 +4,12 @@
     <title>Khalti Checkout</title>
     <script src="https://khalti.com/static/khalti-checkout.js"></script>
 </head>
-<body>
+<body style="background-color: #a1b; display: flex; align-content: center; justify-content:center;">
+    <br><br><br>
+    <div>
     <h2>Pay with Khalti</h2>
     <button id="khalti-button">Pay Rs. {{ order.total_price }}</button>
+    </div>
 
     <script>
         var config = {
