@@ -1,77 +1,123 @@
-{% extends "base.html" %}
-
 {% load static %}
 
-{% block title_content %}
-Your Orders
-<link rel="stylesheet" href="{% static 'css/orders.css' %}">
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Orders</title>
+  <link rel="stylesheet" href="{% static 'css/order.css' %}">
+</head>
+<body>
+  <nav class="navbar">
+    <ul>
+      <li>
+        <a href="{% url 'home' %}" title="Home" aria-label="Home">🏠</a>
+        <span>Home</span>
+      </li>
+      <li>
+        <a href="{% url 'cart_view' %}" title="Cart" aria-label="Cart">🛒</a>
+        <span>Cart</span>
+      </li>
+      <li>
+        <a href="{% url 'order_view' %}" title="Orders" aria-label="Orders">🚚</a>
+        <span>Orders</span>
+      </li>
+    </ul>
+    <ul>
+      {% if user.is_authenticated %}
+        <li>
+          <a href="{% url 'order_history' %}" title="Order History" aria-label="Order History">🎉</a>
+          <span>Order History</span>
+        </li>
+        <li>
+          <a href="{% url 'wishlist' %}" title="Wishlist" aria-label="Wishlist">🎁</a>
+          <span>Wishlist</span>
+        </li>
+        <li>
+          <a href="{% url 'profile' %}" title="Profile" aria-label="Profile">🙎‍♂️</a>
+          <span>Profile</span>
+        </li>
+        <li>
+          <a href="{% url 'logout' %}" title="Logout" aria-label="Logout">🚪</a>
+          <span>Logout</span>
+        </li>
+      {% else %}
+        <li>
+          <a href="{% url 'login' %}" title="Login" aria-label="Login">🔐</a>
+          <span>Login</span>
+        </li>
+        <li>
+          <a href="{% url 'register' %}" title="Register" aria-label="Register">📝</a>
+          <span>Register</span>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
 
-{% block content %}
-<div class="container" style="padding: 20px;">
-    <h1>Your Orders</h1>
+  <div class="container">
+    <h3>Your Orders</h3>
 
     {% if orders %}
-        <div style="overflow-x: auto;">
-            <table class="table table-striped">
-                <thead>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Total Amount</th>
+                    <th>Delivery Method</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
                     <tr>
-                        <th>Order ID</th>
-                        <th>Date</th>
-                        <th>Total Amount</th>
-                        <th>Delivery Method</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <td>{{ order.order_number }}</td>
+                        <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>${{ order.total_price }}</td>
+                        <td>{{ order.delivery_method }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if order.status == 'pending' %}bg-warning
+                                {% elif order.status == 'completed' %}bg-success
+                                {% elif order.status == 'cancelled' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ order.status|capfirst }}
+                            </span>
+                        </td>
+                        <td style="margin: 5px;">
+                            <!-- View Details as button -->
+                            <form action="{% url 'order_details_view' order.order_number %}" method="get">
+                                <button type="submit" class="btn btn-info btn-sm">View Details</button>
+                            </form>
+
+                            {% if order.status == 'pending' %}
+                                <!-- Cancel Order -->
+                                <form method="post" action="{% url 'cancel_order' order.order_number %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Cancel Order</button>
+                                </form>
+
+                                <!-- Invoice -->
+                                <form action="{% url 'invoice_generation' order.order_number %}" method="get">
+                                    <button type="submit" class="btn btn-secondary btn-sm">Invoice (PDF)</button>
+                                </form>
+                            {% endif %}
+                            
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for order in orders %}
-                        <tr>
-                            <td style="white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis;">
-                                {{ order.order_number }}
-                            </td>
-                            <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
-                            <td>${{ order.total_price }}</td>
-                            <td>{{ order.delivery_method }}</td>
-                            <td>
-                                <span class="badge 
-                                    {% if order.status == 'pending' %}bg-warning
-                                    {% elif order.status == 'completed' %}bg-success
-                                    {% elif order.status == 'cancelled' %}bg-danger
-                                    {% else %}bg-secondary{% endif %}">
-                                    {{ order.status|capfirst }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="d-flex flex-wrap gap-2 justify-content-center">
-
-                                    <!-- View Details as button -->
-                                    <form action="{% url 'order_details_view' order.order_number %}" method="get">
-                                        <button type="submit" class="btn btn-info btn-sm">View Details</button>
-                                    </form>
-
-                                    {% if order.status == 'pending' %}
-                                        <!-- Cancel Order -->
-                                        <form method="post" action="{% url 'cancel_order' order.order_number %}">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger btn-sm">Cancel Order</button>
-                                        </form>
-
-                                        <!-- Invoice -->
-                                        <form action="{% url 'invoice_generation' order.order_number %}" method="get">
-                                            <button type="submit" class="btn btn-secondary btn-sm">Invoice (PDF)</button>
-                                        </form>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                {% endfor %}
+            </tbody>
+        </table>
     {% else %}
         <p>You have no orders yet.</p>
     {% endif %}
-</div>
-{% endblock %}
+
+  <hr />
+  <div style="text-align: center;">
+    <a href="{% url 'home' %}" class="btn-homepage">← Continue Shopping</a>
+  </div>
+</body>
+</html>
 

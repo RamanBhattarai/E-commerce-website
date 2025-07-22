@@ -6,91 +6,54 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Profile</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
     <link rel="stylesheet" href="{% static 'css/profile_view.css' %}" />
   </head>
   <body>
-    <nav class="navbar" role="navigation" aria-label="Primary navigation">
-      <!-- Left Icons -->
-      <ul>
+    <nav class="navbar">
+    <ul>
+      <li>
+        <a href="{% url 'home' %}" title="Home" aria-label="Home">🏠</a>
+        <span>Home</span>
+      </li>
+      <li>
+        <a href="{% url 'cart_view' %}" title="Cart" aria-label="Cart">🛒</a>
+        <span>Cart</span>
+      </li>
+      <li>
+        <a href="{% url 'order_view' %}" title="Orders" aria-label="Orders">🚚</a>
+        <span>Orders</span>
+      </li>
+    </ul>
+    <ul>
+      {% if user.is_authenticated %}
         <li>
-          <a href="{% url 'home' %}" title="Home" aria-label="Home">🏠</a>
-          <span>Home</span>
-        </li>
-        <li>
-          <a href="{% url 'cart_view' %}" title="Cart" aria-label="Cart">🛒</a>
-          <span>Cart</span>
-        </li>
-        <li>
-          <a href="{% url 'order_view' %}" title="Orders" aria-label="Orders"
-            >🚚</a
-          >
-          <span>Orders</span>
-        </li>
-      </ul>
-
-      <!-- Search Bar -->
-      <form
-        method="get"
-        action="{% url 'search' %}"
-        class="search-form"
-        role="search"
-        aria-label="Product search"
-      >
-        <div>
-          <input
-            type="text"
-            name="q"
-            placeholder="Search products..."
-            value="{{ request.GET.q }}"
-            aria-label="Search products"
-          />
-          <button type="submit">Search</button>
-        </div>
-      </form>
-
-      <!-- Right Icons -->
-      <ul>
-        {% if user.is_authenticated %}
-        <li>
-          <a
-            href="{% url 'order_history' %}"
-            title="Order History"
-            aria-label="Order History"
-            >🎉</a
-          >
+          <a href="{% url 'order_history' %}" title="Order History" aria-label="Order History">🎉</a>
           <span>Order History</span>
         </li>
         <li>
-          <a href="{% url 'wishlist' %}" title="Wishlist" aria-label="Wishlist"
-            >🎁</a
-          >
+          <a href="{% url 'wishlist' %}" title="Wishlist" aria-label="Wishlist">🎁</a>
           <span>Wishlist</span>
         </li>
         <li>
-          <a href="{% url 'profile' %}" title="Profile" aria-label="Profile"
-            >🙎‍♂️</a
-          >
+          <a href="{% url 'profile' %}" title="Profile" aria-label="Profile">🙎‍♂️</a>
           <span>Profile</span>
         </li>
         <li>
           <a href="{% url 'logout' %}" title="Logout" aria-label="Logout">🚪</a>
           <span>Logout</span>
         </li>
-        {% else %}
+      {% else %}
         <li>
           <a href="{% url 'login' %}" title="Login" aria-label="Login">🔐</a>
           <span>Login</span>
         </li>
         <li>
-          <a href="{% url 'register' %}" title="Register" aria-label="Register"
-            >📝</a
-          >
+          <a href="{% url 'register' %}" title="Register" aria-label="Register">📝</a>
           <span>Register</span>
         </li>
-        {% endif %}
-      </ul>
-    </nav>
+      {% endif %}
+    </ul>
+  </nav>
 
     <div class="container">
       <h1>User Profile</h1>

@@ -9,7 +9,7 @@ def send_order_notification(sender, instance, created, **kwargs):
     if created:
         user = instance.user
         order_number = instance.order_number
-        invoice_url = f"http://yourdomain.com{reverse('invoice_generation', args=[order_number])}"
+        invoice_url = f"http://yourdomain.com{reverse('invoice', args=[order_number])}"
 
 
         send_order_email(user, instance, invoice_url)
